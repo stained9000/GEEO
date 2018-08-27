@@ -6,7 +6,7 @@
     <div class="large-card clearfix">
       <div class="float-left">
         <h2>{{escuela.nombre}}</h2>
-        <em>Creada por: {{escuela.author}} - Modificado en: {{escuela.fecha_modificacion}}</em>
+        <em>Creada por: {{escuela.usuario}} - Modificado en: {{escuela.fecha_modificacion}}</em>
       </div>
 
     </div>
@@ -33,20 +33,16 @@
             <td>{{escuela.nivel}}</td>
           </tr>
           <tr>
+            <td>Tipo</td>
+            <td>{{escuela.tipo}}</td>
+          </tr>
+          <tr>
             <td>Región Educativa</td>
             <td>{{escuela.region_educativa}}</td>
           </tr>
           <tr>
             <td>Distrito</td>
-            <td>{{escuela.distrito}}</td>
-          </tr>
-          <tr>
-            <td>Director</td>
-            <td>{{escuela.director}}</td>
-          </tr>
-          <tr>
-            <td>Email</td>
-            <td>{{escuela.email}}</td>
+            <td>{{escuela.distrito_escolar}}</td>
           </tr>
           <tr>
             <td>Teléfono</td>
@@ -80,26 +76,38 @@
         <thead>
           <th>Posición</th>
           <th>Nombre</th>
+          <th>Email</th>
           <th>Teléfono</th>
         </thead>
         <tr>
+          <td>Director</td>
+          <td>{{personal.nombre_del_director}}</td>
+          <td>{{personal.email_del_director}}</td>
+          <td>{{personal.telefono_del_director}}</td>
+        </tr>
+        <tr>
           <td>Consejero</td>
-          <td>{{personal.nombre_consejero}}</td>
-          <td>{{personal.tel_consejero}}</td>
+          <td>{{personal.nombre_del_consejero}}</td>
+          <td>{{personal.email_del_consejero}}</td>
+          <td>{{personal.telefono_del_consejero}}</td>
         </tr>
         <tr>
           <td>Trabajador Social</td>
-          <td>{{personal.nombre_trabajador}}</td>
-          <td>{{personal.tel_trabajador}}</td>
+          <td>{{personal.nombre_del_trabajador_social}}</td>
+          <td>{{personal.email_del_trabajador_social}}</td>
+          <td>{{personal.telefono_del_trabajador_social}}</td>
         </tr>
         <tr>
           <td>Requisante</td>
-          <td>{{personal.nombre_requisante}}</td>
-          <td>{{personal.tel_requisante}}</td>
+          <td>{{personal.nombre_del_requisante}}</td>
+          <td>{{personal.email_del_requisante}}</td>
+          <td>{{personal.telefono_del_requisante}}</td>
         </tr>
         <tr>
-          <td>Presidente</td>
-          <td>{{personal.nombre_presidente}}</td>
+          <td>Presidente del Consejo Escolar</td>
+          <td>{{personal.nombre_del_presidente_del_consejo_escolar}}</td>
+          <td></td>
+          <td>{{personal.telefono_del_presidente_del_consejo_escolar}}</td>
         </tr>
       </table>
       {% endif %}
@@ -128,25 +136,25 @@
     <table class="table table-striped">
       <tr>
         <td>Matrícula de estudiantes</td>
-        <td>{{matricula.matricula_estudiantes}}</td>
+        <td>{{matricula.matricula_de_estudiantes}}</td>
       </tr>
     </table>
     <table class="table table-striped">
       <tr>
         <td>Maestros de Español</td>
-        <td>{{matricula.maestros_espanol}}</td>
+        <td>{{matricula.maestros_de_espanol}}</td>
       </tr>
       <tr>
         <td>Maestros de Matemáticas</td>
-        <td>{{matricula.maestros_matematicas}}</td>
+        <td>{{matricula.maestros_de_matematicas}}</td>
       </tr>
       <tr>
         <td>Maestros de Inglés</td>
-        <td>{{matricula.maestros_ingles}}</td>
+        <td>{{matricula.maestros_de_ingles}}</td>
       </tr>
       <tr>
         <td>Maestros de Ciencias</td>
-        <td>{{matricula.maestros_ciencias}}</td>
+        <td>{{matricula.maestros_de_ciencias}}</td>
       </tr>
       <tr>
         <td>Otros Maestros</td>
@@ -204,12 +212,13 @@
     </div> <!-- End card -->
   </div> <!-- End column -->
 </div> <!-- End Row -->
+<!--
 <div class="row grid-responsive">
   <div class="column">
     <div class="card">
       <div class="card-title clear-fix">
       <h3>Preferencia de Horarios</h3>
-    </div> <!-- End card-title -->
+    </div>  End card-title
     <div class="card-block">
       <table>
         <tr>
@@ -235,10 +244,11 @@
           <td>{{escuela.horario_pref_taller_maestros}}</td>
         </tr>
       </table>
-    </div> <!-- End card-block -->
-    </div> <!-- End card -->
-  </div> <!-- End column -->
-</div> <!--End row -->
+    </div> End card-block
+    </div> End card
+  </div> End column
+</div> End row
+-->
 <div class="row grid-responsive">
   <div class="column">
     <div class="card">
@@ -260,9 +270,7 @@
             <th>Necesidad</th>
           -->
             <th>Taller sugerido</th>
-            <!--
             <th>Fecha de Creacion</th>
-          -->
             <th>Fecha de Modificacion</th>
             <th>Usuario</th>
             {% if user.is_authenticated %}
@@ -279,10 +287,8 @@
               -->
                 <td>{{actividad.taller_sugerido}}</td>
                 <td>{{actividad.fecha_creacion}}</td>
-                <!--
                 <td>{{actividad.fecha_modificacion}}</td>
-              -->
-                <td>{{actividad.author}}</td>
+                <td>{{actividad.usuario}}</td>
                 {% if user.is_authenticated %}
                 <td><a class="button float-right" href="{% url 'actividad_edit' codigo=escuela.codigo pk=actividad.pk %}"><span class="fa fa-pencil"></span> Editar</a></td>
                 {% endif %}

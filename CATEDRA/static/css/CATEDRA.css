@@ -1,0 +1,14 @@
+.page-header {
+    background-color: #4286f4;
+    margin-top: 0;
+    padding: 20px 20px 20px 40px;
+}
+
+h1 a {
+  color: black;
+  text-decoration: none;
+}
+
+form p input {
+  width: 100%;
+}

@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Escuela, Personal, Matricula, Actividades, Destrezas
-from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezasForm, ActividadesForm
+from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita
+from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezaForm, ActividadForm, VisitaForm, PresupuestoForm
 from django.utils import timezone
 
 # Create your views here.
@@ -25,19 +25,19 @@ def perfil_escuela(request, codigo):
     try:
         matricula = Matricula.objects.get(escuela=escuela)
 
-        total_maestros = matricula.maestros_espanol + matricula.maestros_matematicas + matricula.maestros_ingles + matricula.maestros_ciencias + matricula.maestros_ciencias
+        total_maestros = matricula.maestros_de_espanol + matricula.maestros_de_matematicas + matricula.maestros_de_ingles + matricula.maestros_de_ciencias + matricula.maestros_otros
     except:
         matricula = 'Aún no se ha agregado información de matrícula a esta escuela.'
 
         total_maestros = None
 
     try:
-        destrezas = Destrezas.objects.get(escuela=escuela)
+        destrezas = Destreza.objects.get(escuela=escuela)
     except:
         destrezas = 'Aún no se ha agregado información de destrezas a esta escuela.'
 
 
-    actividades = Actividades.objects.filter(escuela=escuela)
+    actividades = Actividad.objects.filter(escuela=escuela)
 
     if len(actividades) == 0:
         actividades = 'Aún no se ha agregado información de actividades a esta escuela.'
@@ -75,21 +75,23 @@ def escuela_edit(request, codigo):
     return render(request, 'CATEDRA/escuela_edit.html', {'form': form})
 
 def crear_personal(request, codigo):
+    escuela = Escuela.objects.get(codigo=codigo)
     if request.method == "POST":
         form = PersonalForm(request.POST)
         if form.is_valid():
             personal = form.save(commit=False)
-            personal.escuela = Escuela.objects.get(codigo=codigo)
+            personal.escuela = escuela
             personal.fecha_modificacion = timezone.now()
             personal.save()
             return redirect('perfil_escuela', codigo=codigo)
     else:
         form = PersonalForm()
 
-    return render(request, 'CATEDRA/personal_edit.html', {'form': form})
+    return render(request, 'CATEDRA/personal_edit.html', {'form': form, 'escuela': escuela})
 
 def personal_edit(request, codigo):
-    personal = get_object_or_404(Personal, escuela=Escuela.objects.get(codigo=codigo))
+    escuela = Escuela.objects.get(codigo=codigo)
+    personal = get_object_or_404(Personal, escuela=escuela)
     if request.method == "POST":
         form = PersonalForm(request.POST, instance=personal)
         if form.is_valid():
@@ -100,7 +102,7 @@ def personal_edit(request, codigo):
     else:
         form = PersonalForm(instance=personal)
 
-    return render(request, 'CATEDRA/personal_edit.html', {'form': form})
+    return render(request, 'CATEDRA/personal_edit.html', {'form': form, 'escuela': escuela})
 
 def crear_matricula(request, codigo):
     if request.method == "POST":
@@ -131,23 +133,25 @@ def matricula_edit(request, codigo):
     return render(request, 'CATEDRA/matricula_edit.html', {'form': form})
 
 def crear_destrezas(request, codigo):
+    escuela = Escuela.objects.get(codigo=codigo)
     if request.method == "POST":
-        form = DestrezasForm(request.POST)
+        form = DestrezaForm(request.POST)
         if form.is_valid():
             destrezas = form.save(commit=False)
-            destrezas.escuela = Escuela.objects.get(codigo=codigo)
+            destrezas.escuela = escuela
             destrezas.fecha_modificacion = timezone.now()
             destrezas.save()
             return redirect('perfil_escuela', codigo=codigo)
     else:
-        form = DestrezasForm()
+        form = DestrezaForm()
 
-    return render(request, 'CATEDRA/destrezas_edit.html', {'form': form})
+    return render(request, 'CATEDRA/destrezas_edit.html', {'form': form, 'escuela': escuela})
 
 def destrezas_edit(request, codigo):
-    destrezas = get_object_or_404(Destrezas, escuela=Escuela.objects.get(codigo=codigo))
+    escuela = Escuela.objects.get(codigo=codigo)
+    destrezas = get_object_or_404(Destreza, escuela=Escuela.objects.get(codigo=codigo))
     if request.method == "POST":
-        form = DestrezasForm(request.POST, instance=destrezas)
+        form = DestrezaForm(request.POST, instance=destrezas)
         if form.is_valid():
             destrezas = form.save(commit=False)
             destrezas.fecha_modificacion = timezone.now()
@@ -156,34 +160,34 @@ def destrezas_edit(request, codigo):
     else:
         form = MatriculaForm(instance=destrezas)
 
-    return render(request, 'CATEDRA/destrezas_edit.html', {'form': form})
+    return render(request, 'CATEDRA/destrezas_edit.html', {'form': form, 'escuela': escuela})
 
 def crear_actividad(request, codigo):
     if request.method == "POST":
-        form = ActividadesForm(request.POST)
+        form = ActividadForm(request.POST)
         if form.is_valid():
             actividad = form.save(commit=False)
             actividad.escuela = Escuela.objects.get(codigo=codigo)
-            actividad.author = request.user
+            actividad.usuario = request.user
             actividad.fecha_creacion = timezone.now()
             actividad.save()
             return redirect('perfil_escuela', codigo=codigo)
     else:
-        form = ActividadesForm()
+        form = ActividadForm()
 
     return render(request, 'CATEDRA/actividad_edit.html', {'form': form})
 
 def actividad_edit(request, codigo, pk):
-    actividad = get_object_or_404(Actividades, pk=pk)
+    actividad = get_object_or_404(Actividad, pk=pk)
     if request.method == "POST":
-        form = ActividadesForm(request.POST, instance=actividad)
+        form = ActividadForm(request.POST, instance=actividad)
         if form.is_valid():
             actividad = form.save(commit=False)
-            actividad.author = request.user
+            actividad.usuario = request.user
             actividad.fecha_modificacion = timezone.now()
             actividad.save()
             return redirect('perfil_escuela', codigo=codigo)
     else:
-        form = ActividadesForm(instance=actividad)
+        form = ActividadForm(instance=actividad)
 
     return render(request, 'CATEDRA/actividad_edit.html', {'form': form})
