@@ -1,0 +1,21 @@
+{% extends 'CATEDRA/base.html' %}
+
+{% block content %}
+<div class="row grid-responsive">
+  <div class="column page-heading">
+    <div class="card">
+      <div class="card-title">
+        <h3>Información de la escuela</h3>
+      </div> <!-- End card-title -->
+      <div class="card-block">
+        <form method="POST" class="post-form">{% csrf_token %}
+          {{form}}
+          <br/>
+          <button type="submit"><span class="fa fa-save"></span> Guardar</button>
+        </form>
+      </div> <!-- End card-block -->
+    </div> <!-- End card -->
+  </div> <!-- End column -->
+</div> <!-- End row -->
+
+{% endblock %}

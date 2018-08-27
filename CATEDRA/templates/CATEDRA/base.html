@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>GEEO/CATEDRA</title>
+
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700" rel="stylesheet">
+
+	<!-- Template Styles -->
+	<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+
+	<!-- CSS Reset -->
+	<link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+
+	<!-- Milligram CSS minified -->
+	<link rel="stylesheet" href="{% static 'css/milligram.min.css' %}">
+
+	<!-- Main Styles -->
+	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+</head>
+
+<body>
+	<div class="navbar">
+		<div class="row">
+			<div class="column column-30 col-site-title"><a href="#" class="site-title float-left">GEEO / CATEDRA</a></div>
+			<div class="column column-40 col-search"><a href="#" class="search-btn fa fa-search"></a>
+				<input type="text" name="" value="" placeholder="Buscar..." />
+			</div>
+			<div class="column column-30">
+				<div class="user-section"><a href="{% url 'logout' %}?next={{request.path}}">
+					{% if user.is_authenticated %}
+					<img src="http://via.placeholder.com/50x50" alt="profile photo" class="circle float-left profile-photo" width="50" height="auto">
+					<div class="username">
+						<h4>{{user.get_username}}</h4>
+						<p>Log out</p>
+					</div>
+					{% else %}
+					<div class="username">
+						<a href="{% url 'login' %}?next={{request.path}}" class="top-menu"><span class="fa fa-lock"></span></a>
+					</div>
+					{% endif %}
+
+				</a></div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div id="sidebar" class="column">
+			<h5>Menú Principal</h5>
+			<ul>
+				<li><a href="{% url 'inicio' %}"><em class="fa fa-home"></em> Inicio</a></li>
+				<li><a href="{% url 'lista_escuelas' %}"><em class="fa fa-building"></em> Escuelas</a></li>
+				<li><a href="#"><em class="fa fa-random"></em> Destrezas</a></li>
+				<li><a href="#"><em class="fa fa-users"></em> Personal</a></li>
+				<li><a href="#"><em class="fa fa-calendar"></em> Actividades</a></li>
+				<li><a href="#"><em class="fa fa-book"></em> Matrícula</a></li>
+			</ul>
+		</div>
+		<section id="main-content" class="column column-offset-20">
+    		{% block content%}
+    		{% endblock %}
+		</section>
+	</div>
+
+</body>
+</html>

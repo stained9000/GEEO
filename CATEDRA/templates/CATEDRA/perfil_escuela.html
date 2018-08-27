@@ -1,0 +1,303 @@
+{% extends 'CATEDRA/base.html' %}
+
+{% block content %}
+<div class="row grid-responsive">
+  <div class="column page-heading">
+    <div class="large-card clearfix">
+      <div class="float-left">
+        <h2>{{escuela.nombre}}</h2>
+        <em>Creada por: {{escuela.author}} - Modificado en: {{escuela.fecha_modificacion}}</em>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="row grid-responsive">
+  <div class="column column-50">
+    <div class="card">
+      <div class="card-title clearfix">
+          <h3 class="float-left">Datos Generales</h3>
+          {% if user.is_authenticated %}
+          <a class="button float-right" href="{% url 'escuela_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
+          {% endif %}
+      </div>
+      <div class="card-block">
+        <table>
+          <tr>
+            <td>Código</td>
+            <td>{{escuela.codigo}}</td>
+          </tr>
+          <tr>
+            <td>Nivel</td>
+            <td>{{escuela.nivel}}</td>
+          </tr>
+          <tr>
+            <td>Región Educativa</td>
+            <td>{{escuela.region_educativa}}</td>
+          </tr>
+          <tr>
+            <td>Distrito</td>
+            <td>{{escuela.distrito}}</td>
+          </tr>
+          <tr>
+            <td>Director</td>
+            <td>{{escuela.director}}</td>
+          </tr>
+          <tr>
+            <td>Email</td>
+            <td>{{escuela.email}}</td>
+          </tr>
+          <tr>
+            <td>Teléfono</td>
+            <td>{{escuela.telefono}}</td>
+          </tr>
+          <tr>
+            <td>Fax</td>
+            <td>{{escuela.fax}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="column column-50">
+  <div class="card">
+    <div class="card-title clearfix">
+      <h3 class="float-left">Personal Administrativo</h3>
+      {% if user.is_authenticated %}
+      {% if personal == 'Aún no se ha agregado información de personal administrativo a esta escuela.' %}
+        <a class="button float-right" href="{% url 'crear_personal' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
+      {% else %}
+        <a class="button float-right" href="{% url 'personal_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
+      {% endif %}
+      {% endif %}
+    </div> <!--End class title -->
+    <div class="card-block">
+      {% if personal == 'Aún no se ha agregado información de personal administrativo a esta escuela.' %}
+      <p>{{personal}}</p>
+      {% else %}
+      <table class='table table-striped'>
+        <thead>
+          <th>Posición</th>
+          <th>Nombre</th>
+          <th>Teléfono</th>
+        </thead>
+        <tr>
+          <td>Consejero</td>
+          <td>{{personal.nombre_consejero}}</td>
+          <td>{{personal.tel_consejero}}</td>
+        </tr>
+        <tr>
+          <td>Trabajador Social</td>
+          <td>{{personal.nombre_trabajador}}</td>
+          <td>{{personal.tel_trabajador}}</td>
+        </tr>
+        <tr>
+          <td>Requisante</td>
+          <td>{{personal.nombre_requisante}}</td>
+          <td>{{personal.tel_requisante}}</td>
+        </tr>
+        <tr>
+          <td>Presidente</td>
+          <td>{{personal.nombre_presidente}}</td>
+        </tr>
+      </table>
+      {% endif %}
+    </div> <!-- End card-block -->
+  </div> <!-- End card -->
+</div> <!--End column -->
+
+</div> <!-- End row -->
+<div class="row grid-responsive">
+  <div class="column column-50">
+    <div class="card">
+      <div class="card-title clearfix">
+        <h3 class="float-left">Matrícula de la Escuela</h3>
+        {% if user.is_authenticated %}
+        {% if matricula == 'Aún no se ha agregado información de matrícula a esta escuela.' %}
+          <a class="button float-right" href="{% url 'crear_matricula' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
+        {% else %}
+          <a class="button float-right" href="{% url 'matricula_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
+        {% endif %}
+        {% endif %}
+      </div> <!-- End card-title -->
+      <div class="card-block">
+    {% if matricula == 'Aún no se ha agregado información de matrícula a esta escuela.' %}
+    <p>{{matricula}}</p>
+    {% else %}
+    <table class="table table-striped">
+      <tr>
+        <td>Matrícula de estudiantes</td>
+        <td>{{matricula.matricula_estudiantes}}</td>
+      </tr>
+    </table>
+    <table class="table table-striped">
+      <tr>
+        <td>Maestros de Español</td>
+        <td>{{matricula.maestros_espanol}}</td>
+      </tr>
+      <tr>
+        <td>Maestros de Matemáticas</td>
+        <td>{{matricula.maestros_matematicas}}</td>
+      </tr>
+      <tr>
+        <td>Maestros de Inglés</td>
+        <td>{{matricula.maestros_ingles}}</td>
+      </tr>
+      <tr>
+        <td>Maestros de Ciencias</td>
+        <td>{{matricula.maestros_ciencias}}</td>
+      </tr>
+      <tr>
+        <td>Otros Maestros</td>
+        <td>{{matricula.maestros_otros}}</td>
+      </tr>
+      <tr>
+        <td>Total de Maestros</td>
+        <td>{{total_maestros}}</td>
+      </tr>
+    </table>
+    {% endif %}
+      </div> <!-- End card-block -->
+    </div> <!-- End card -->
+  </div> <!-- End column -->
+<div class="column column-50">
+    <div class="card">
+      <div class="card-title clearfix">
+        <h3 class="float-left">Dominio de Destrezas</h3>
+        {% if user.is_authenticated %}
+        {% if destrezas == 'Aún no se ha agregado información de destrezas a esta escuela.' %}
+          <a class="button float-right" href="{% url 'crear_destrezas' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
+        {% else %}
+          <a class="button float-right" href="{% url 'destrezas_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
+        {% endif %}
+        {% endif %}
+      </div> <!-- End card-title -->
+      <div class="card-block">
+    {% if destrezas == 'Aún no se ha agregado información de destrezas a esta escuela.' %}
+    <p>{{destrezas}}</p>
+    {% else %}
+    <table>
+      <tr>
+        <td>Español</td>
+        <td>{{destrezas.espanol}}</td>
+      </tr>
+      <tr>
+        <td>Matemáticas</td>
+        <td>{{destrezas.matematicas}}</td>
+      </tr>
+      <tr>
+        <td>Inglés</td>
+        <td>{{destrezas.ingles}}</td>
+      </tr>
+      <tr>
+        <td>Prioridad</td>
+        <td>{{destrezas.prioridad}}</td>
+      </tr>
+      <tr>
+        <td>Materia Prioridad</td>
+        <td>{{destrezas.materia_prioridad}}</td>
+      </tr>
+    </table>
+    {% endif %}
+      </div> <!-- End card-block -->
+    </div> <!-- End card -->
+  </div> <!-- End column -->
+</div> <!-- End Row -->
+<div class="row grid-responsive">
+  <div class="column">
+    <div class="card">
+      <div class="card-title clear-fix">
+      <h3>Preferencia de Horarios</h3>
+    </div> <!-- End card-title -->
+    <div class="card-block">
+      <table>
+        <tr>
+          <td colspan="2"><strong>Horario preferido para talleres de padres</strong></td>
+        </tr>
+        <tr>
+          <td>Días</td>
+          <td>{{escuela.dia_pref_taller_padres}}</td>
+        </tr>
+        <tr>
+          <td>Horario</td>
+          <td>{{escuela.horario_pref_taller_padres}}</td>
+        </tr>
+        <tr>
+          <td colspan="2"><strong>Horario preferido para talleres a maestros</strong></td>
+        </tr>
+        <tr>
+          <td>Días</td>
+          <td>{{escuela.dia_pref_taller_maestros}}</td>
+        </tr>
+        <tr>
+          <td>Horario</td>
+          <td>{{escuela.horario_pref_taller_maestros}}</td>
+        </tr>
+      </table>
+    </div> <!-- End card-block -->
+    </div> <!-- End card -->
+  </div> <!-- End column -->
+</div> <!--End row -->
+<div class="row grid-responsive">
+  <div class="column">
+    <div class="card">
+      <div class="card-title clearfix">
+      <h3 class="float-left">Historial de Actividades</h3>
+      {% if user.is_authenticated %}
+      <a class="button float-right" href="{% url 'crear_actividad' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
+      {% endif %}
+    </div> <!-- End card-title -->
+    <div class="card-block">
+      {% if actividades == 'Aún no se ha agregado información de actividades a esta escuela.' %}
+        <p>{{actividades}}</p>
+      {% else %}
+        <table>
+          <thead>
+            <th>Estado</th>
+            <th>Tipo</th>
+            <!--
+            <th>Necesidad</th>
+          -->
+            <th>Taller sugerido</th>
+            <!--
+            <th>Fecha de Creacion</th>
+          -->
+            <th>Fecha de Modificacion</th>
+            <th>Usuario</th>
+            {% if user.is_authenticated %}
+            <th>Acciones</th>
+            {% endif %}
+          </thead>
+          <tbody>
+            {% for actividad in actividades %}
+              <tr>
+                <td>{{actividad.estado}}</td>
+                <td>{{actividad.tipo}}</td>
+                <!--
+                <td>{{actividad.necesidad}}</td>
+              -->
+                <td>{{actividad.taller_sugerido}}</td>
+                <td>{{actividad.fecha_creacion}}</td>
+                <!--
+                <td>{{actividad.fecha_modificacion}}</td>
+              -->
+                <td>{{actividad.author}}</td>
+                {% if user.is_authenticated %}
+                <td><a class="button float-right" href="{% url 'actividad_edit' codigo=escuela.codigo pk=actividad.pk %}"><span class="fa fa-pencil"></span> Editar</a></td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div> <!-- End card-block -->
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
