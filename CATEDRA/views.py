@@ -3,11 +3,23 @@ from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupues
 from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezaForm, ActividadForm, VisitaForm, PresupuestoForm
 from django.utils import timezone
 from sodapy import Socrata
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 def lista_escuelas(request):
 
-    escuelas = Escuela.objects.all()
+    lista_escuelas = Escuela.objects.all()
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(lista_escuelas, 50)
+
+    try:
+        escuelas = paginator.page(page)
+    except PageNotAnInteger:
+        escuelas = paginator.page(1)
+    except EmptyPage:
+        escuelas = paginator.page(paginator.num_pages)
+
     return render(request, 'CATEDRA/lista_escuelas.html', {'escuelas': escuelas})
 
 def inicio(request):
