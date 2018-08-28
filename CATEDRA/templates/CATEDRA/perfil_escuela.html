@@ -187,24 +187,60 @@
     {% else %}
     <table>
       <tr>
-        <td>Español</td>
-        <td>{{destrezas.espanol}}</td>
+        <td>Español Pre-basico</td>
+        <td>{{destrezas.espanol_prebasico|format_percent}}%</td>
       </tr>
       <tr>
-        <td>Matemáticas</td>
-        <td>{{destrezas.matematicas}}</td>
+        <td>Español Basico</td>
+        <td>{{destrezas.espanol_basico|format_percent}}%</td>
       </tr>
       <tr>
-        <td>Inglés</td>
-        <td>{{destrezas.ingles}}</td>
+        <td>Español Proficiente</td>
+        <td>{{destrezas.espanol_proficiente|format_percent}}%</td>
+      </tr>
+      <tr>
+        <td>Español Avanzado</td>
+        <td>{{destrezas.espanol_avanzado|format_percent}}%</td>
+      </tr>
+      <tr>
+        <td>Matemáticas Pre-basico</td>
+        <td>{{destrezas.matematicas_prebasico|format_percent}}%</td>
+      </tr>
+      <tr>
+        <td>Matemáticas Basico</td>
+        <td>{{destrezas.matematicas_basico|format_percent}}%</td>
+      </tr>
+      <tr>
+        <td>Matemáticas Proficiente</td>
+        <td>{{destrezas.matematicas_proficiente|format_percent}}%</td>
+      </tr>
+      <tr>
+        <td>Matemáticas Avanzado</td>
+        <td>{{destrezas.matematicas_avanzado|format_percent}}%</td>
+      </tr>
+      <tr>
+        <td>Inglés Pre-basico</td>
+        <td>{{destrezas.ingles_prebasico|format_percent}}%</td>
+      </tr>
+      <tr>
+        <td>Inglés Basico</td>
+        <td>{{destrezas.ingles_basico|format_percent}}%</td>
+      </tr>
+      <tr>
+        <td>Inglés Proficiente</td>
+        <td>{{destrezas.ingles_proficiente|format_percent}}%</td>
+      </tr>
+      <tr>
+        <td>Inglés Avanzado</td>
+        <td>{{destrezas.ingles_avanzado|format_percent}}%</td>
       </tr>
       <tr>
         <td>Prioridad</td>
-        <td>{{destrezas.prioridad}}</td>
+        <td>{{destrezas.prioridad|format_percent}}%</td>
       </tr>
       <tr>
         <td>Materia Prioridad</td>
-        <td>{{destrezas.materia_prioridad}}</td>
+        <td>{{destrezas.materia_prioridad|format_percent}}%</td>
       </tr>
     </table>
     {% endif %}

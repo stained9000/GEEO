@@ -249,7 +249,7 @@ select:focus {
 #sidebar {
   position: fixed;
   z-index: 0;
-  width: 16% !important;
+  width: 20% !important;
   background: #fff;
   padding: 10px 30px !important;
   box-shadow: 3px 0px 8px rgba(0, 0, 0, 0.05);
@@ -278,7 +278,7 @@ select:focus {
         background-color: #f9f9f9; }
 
 #main-content {
-  width: 84% !important;
+  width: 80% !important;
   padding: 20px 3.5rem !important;
   margin-top: 95px;
   margin-right: 12px; }
@@ -520,10 +520,10 @@ select:focus {
     max-width: 100%; }
 
   #sidebar {
-    width: 16% !important; }
+    width: 30% !important; }
 
   #main-content {
-    width: 84% !important;
+    width: 70% !important;
     margin-left: 30%; }
 
   .card .canvas-wrapper {

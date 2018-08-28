@@ -249,7 +249,7 @@ select:focus {
 #sidebar {
   position: fixed;
   z-index: 0;
-  width: 16% !important;
+  width: 20% !important;
   background: #fff;
   padding: 10px 30px !important;
   box-shadow: 3px 0px 8px rgba(0, 0, 0, 0.05);
@@ -278,7 +278,7 @@ select:focus {
         background-color: #f9f9f9; }
 
 #main-content {
-  width: 84% !important;
+  width: 80% !important;
   padding: 20px 3.5rem !important;
   margin-top: 95px;
   margin-right: 12px; }
@@ -524,43 +524,6 @@ select:focus {
 
   #main-content {
     width: 70% !important;
-    margin-left: 30%; }
-
-  .card .canvas-wrapper {
-    width: 95%; }
-
-  .user-section {
-    margin-right: 20px; }
-    .user-section .username {
-      display: none; } }
-
-@media screen and (min-width: 961px) {
-  .row.grid-responsive {
-    flex-direction: column; }
-
-  .row.grid-responsive .column,
-  .row.grid-responsive .column.column-10,
-  .row.grid-responsive .column.column-20,
-  .row.grid-responsive .column.column-25,
-  .row.grid-responsive .column.column-33,
-  .row.grid-responsive .column.column-40,
-  .row.grid-responsive .column.column-50,
-  .row.grid-responsive .column.column-60,
-  .row.grid-responsive .column.column-66,
-  .row.grid-responsive .column.column-67,
-  .row.grid-responsive .column.column-75,
-  .row.grid-responsive .column.column-80,
-  .row.grid-responsive .column.column-90,
-  .row.grid-responsive .column.column-100 {
-    display: block;
-    width: 100%;
-    max-width: 100%; }
-
-  #sidebar {
-    width: 16% !important; }
-
-  #main-content {
-    width: 84% !important;
     margin-left: 30%; }
 
   .card .canvas-wrapper {

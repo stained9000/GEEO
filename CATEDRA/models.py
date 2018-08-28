@@ -17,6 +17,7 @@ class Escuela(models.Model):
         ('Superior', 'Superior'),
         ('Intermedio', 'Intermedio'),
         ('Segunda Unidad', 'Segunda Unidad'),
+        ('Todos los niveles', 'Todos los niveles'),
     )
 
     tipo_choices = (
@@ -27,8 +28,18 @@ class Escuela(models.Model):
         ('Vocacional', 'Vocacional'),
     )
 
+    zona_choices = (
+        ('URBANA', 'URBANA'),
+        ('RURAL', 'RURAL'),
+    )
+
+    operacional_choices = (
+        ('SI', 'SI'),
+        ('NO', 'NO'),
+    )
+
     # Datos de usuario que genera el registro
-    usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE, null=True, blank=True)
 
     # Datos generales de la escuela
     codigo = models.IntegerField(default=0, primary_key=True)
@@ -37,7 +48,14 @@ class Escuela(models.Model):
     fax = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000')
     region_educativa = models.CharField(max_length=200)
     distrito_escolar = models.CharField(max_length=200)
+    municipio_escolar = models.CharField(max_length=200, null=True, blank=True)
+    direccion_fisica = models.CharField(max_length=200, null=True, blank=True)
+    direccion_zipcode = models.CharField(max_length=200, null=True, blank=True)
+    #geolocalizacion = models.PointField(null=True, blank=True)
+    zona = models.CharField(max_length=200, choices=zona_choices, default='RURAL')
+    operacional = models.CharField(max_length=200, choices=operacional_choices, default='SI')
     nivel = models.CharField(max_length=200, choices=nivel_choices, default='Elemental')
+    grados = models.CharField(max_length=200, null=True, blank=True)
     tipo = models.CharField(max_length=200, choices=tipo_choices, default='Regular')
 
 
@@ -65,21 +83,21 @@ class Personal(models.Model):
     escuela = models.OneToOneField(Escuela, primary_key=True, on_delete=models.CASCADE)
 
     #Datos generales del Personal Administrativo de la Escuela
-    nombre_del_director = models.CharField(max_length=200)
-    estado_del_director = models.CharField(max_length=200, choices=estado_director_choices, default='En propiedad')
-    email_del_director = models.EmailField(max_length=254)
-    telefono_del_director = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000')
-    nombre_del_consejero = models.CharField(max_length=200)
-    email_del_consejero = models.EmailField(max_length=254)
-    telefono_del_consejero = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000')
-    nombre_del_trabajador_social = models.CharField(max_length=200)
-    email_del_trabajador_social = models.EmailField(max_length=254)
-    telefono_del_trabajador_social = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000')
-    nombre_del_requisante = models.CharField(max_length=200)
-    email_del_requisante = models.EmailField(max_length=254)
-    telefono_del_requisante = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000')
-    nombre_del_presidente_del_consejo_escolar = models.CharField(max_length=200)
-    telefono_del_presidente_del_consejo_escolar = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000')
+    nombre_del_director = models.CharField(max_length=200, blank=True, null=True)
+    estado_del_director = models.CharField(max_length=200, choices=estado_director_choices, blank=True, null=True)
+    email_del_director = models.EmailField(max_length=254, null=True, blank=True)
+    telefono_del_director = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000', blank=True, null=True)
+    nombre_del_consejero = models.CharField(max_length=200, blank=True, null=True)
+    email_del_consejero = models.EmailField(max_length=254, blank=True, null=True)
+    telefono_del_consejero = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000', blank=True, null=True)
+    nombre_del_trabajador_social = models.CharField(max_length=200, blank=True, null=True)
+    email_del_trabajador_social = models.EmailField(max_length=254, blank=True, null=True)
+    telefono_del_trabajador_social = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000', blank=True, null=True)
+    nombre_del_requisante = models.CharField(max_length=200, blank=True, null=True)
+    email_del_requisante = models.EmailField(max_length=254, blank=True, null=True)
+    telefono_del_requisante = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000', blank=True, null=True)
+    nombre_del_presidente_del_consejo_escolar = models.CharField(max_length=200, blank=True, null=True)
+    telefono_del_presidente_del_consejo_escolar = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000', blank=True, null=True)
 
 
     # Datos de creacion y modificacion del registro
@@ -94,7 +112,28 @@ class Matricula(models.Model):
     escuela = models.OneToOneField(Escuela, primary_key=True, on_delete=models.CASCADE)
 
     #Datos generales de la matricula de la escuela
-    matricula_de_estudiantes = models.IntegerField(default=0)
+    matricula_de_estudiantes = models.IntegerField(default=0, blank=True, null=True)
+    grado_infant = models.IntegerField(default=0, blank=True, null=True)
+    grado_toddler = models.IntegerField(default=0, blank=True, null=True)
+    grado_pk = models.IntegerField(default=0, blank=True, null=True)
+    grado_pke = models.IntegerField(default=0, blank=True, null=True)
+    grado_pkm = models.IntegerField(default=0, blank=True, null=True)
+    grado_k = models.IntegerField(default=0, blank=True, null=True)
+    grado_1 = models.IntegerField(default=0, blank=True, null=True)
+    grado_2 = models.IntegerField(default=0, blank=True, null=True)
+    grado_3 = models.IntegerField(default=0, blank=True, null=True)
+    grado_4 = models.IntegerField(default=0, blank=True, null=True)
+    grado_5 = models.IntegerField(default=0, blank=True, null=True)
+    grado_6 = models.IntegerField(default=0, blank=True, null=True)
+    grado_SGE = models.IntegerField(default=0, blank=True, null=True)
+    grado_7 = models.IntegerField(default=0, blank=True, null=True)
+    grado_8 = models.IntegerField(default=0, blank=True, null=True)
+    grado_9 = models.IntegerField(default=0, blank=True, null=True)
+    grado_SGI = models.IntegerField(default=0, blank=True, null=True)
+    grado_10 = models.IntegerField(default=0, blank=True, null=True)
+    grado_11 = models.IntegerField(default=0, blank=True, null=True)
+    grado_12 = models.IntegerField(default=0, blank=True, null=True)
+    grado_SGS = models.IntegerField(default=0, blank=True, null=True)
     maestros_de_espanol = models.IntegerField(default=0)
     maestros_de_matematicas = models.IntegerField(default=0)
     maestros_de_ingles = models.IntegerField(default=0)
@@ -159,11 +198,26 @@ class Destreza(models.Model):
     escuela = models.OneToOneField(Escuela, primary_key=True, on_delete=models.CASCADE)
 
     #Datos de destrezas de la escuela
-    espanol = models.CharField(max_length=200)
-    matematicas = models.CharField(max_length=200)
-    ingles = models.CharField(max_length=200)
-    prioridad = models.CharField(max_length=200)
-    materia_prioridad = models.CharField(max_length=200)
+    espanol = models.CharField(max_length=200, blank=True, null=True)
+    espanol_prebasico = models.FloatField(default=0, blank=True, null=True)
+    espanol_basico = models.FloatField(default=0, blank=True, null=True)
+    espanol_proficiente = models.FloatField(default=0, blank=True, null=True)
+    espanol_avanzado = models.FloatField(default=0, blank=True, null=True)
+
+    matematicas = models.CharField(max_length=200, blank=True, null=True)
+    matematicas_prebasico = models.FloatField(default=0, blank=True, null=True)
+    matematicas_basico = models.FloatField(default=0, blank=True, null=True)
+    matematicas_proficiente = models.FloatField(default=0, blank=True, null=True)
+    matematicas_avanzado = models.FloatField(default=0, blank=True, null=True)
+
+    ingles = models.CharField(max_length=200, blank=True, null=True)
+    ingles_prebasico = models.FloatField(default=0, blank=True, null=True)
+    ingles_basico = models.FloatField(default=0, blank=True, null=True)
+    ingles_proficiente = models.FloatField(default=0, blank=True, null=True)
+    ingles_avanzado = models.FloatField(default=0, blank=True, null=True)
+
+    prioridad = models.CharField(max_length=200, blank=True, null=True)
+    materia_prioridad = models.CharField(max_length=200, blank=True, null=True)
 
     #Datos de creacion y modificacion del registro
     fecha_creacion = models.DateTimeField(default=timezone.now)
