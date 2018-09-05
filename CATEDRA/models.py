@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.core.validators import RegexValidator
 from  datetime import datetime
+from django.contrib.auth.models import User
 
 
 # Create your models here.
@@ -298,3 +299,16 @@ class Actividad(models.Model):
 
     def __str__(self):
         return "Actividad de la escuela " + self.escuela.nombre
+
+class Empleado(models.Model):
+    rol_choices = (
+    ('Administrativo', 'Administrativo'),
+    ('Vendedor', 'Vendedor'),
+    )
+
+    def upload_to(instance, filename):
+        return 'imagenes/%s/%s' % (instance.usuario.username, filename)
+
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    rol = models.CharField(max_length=200, choices=rol_choices, default='Vendedor')
+    avatar = models.ImageField(upload_to=upload_to, null=True, blank=True)

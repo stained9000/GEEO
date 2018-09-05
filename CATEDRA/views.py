@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita
+from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Empleado
 from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezaForm, ActividadForm, VisitaForm, PresupuestoForm
 from django.utils import timezone
 from sodapy import Socrata
@@ -344,3 +344,58 @@ def cargar_escuelas(request):
             destreza_obj.save()
 
     return render(request, 'CATEDRA/cargar_escuelas.html', {})
+
+def lista_vendedores(request):
+    lista_vendedores = Empleado.objects.filter(rol='Vendedor')
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(lista_vendedores, 50)
+
+    try:
+        vendedores = paginator.page(page)
+    except PageNotAnInteger:
+        vendedores = paginator.page(1)
+    except EmptyPage:
+        vendedores = paginator.page(paginator.num_pages)
+
+    return render(request, 'CATEDRA/lista_vendedores.html', {'vendedores': vendedores})
+
+def perfil_vendedor(request, pk):
+
+    vendedor = get_object_or_404(Empleado, pk=pk)
+    visitas = Visita.objects.filter(usuario=vendedor.usuario)
+
+    return render(request, 'CATEDRA/perfil_vendedor.html', {'vendedor': vendedor, 'visitas': visitas,})
+
+
+
+def crear_visita(request, pk_vendedor, pk_visita):
+    if request.method == "POST":
+        form = VisitaForm(request.POST)
+        if form.is_valid():
+            visita = form.save(commit=False)
+            visita.escuela = Visita.objects.get(pk=pk_visita)
+            visita.usuario = request.user
+            visita.fecha_creacion = timezone.now()
+            visita.save()
+            return redirect('perfil_vendedor', pk=pk_vendedor)
+    else:
+        form = VisitaForm()
+
+    return render(request, 'CATEDRA/visita_edit.html', {'form': form})
+
+
+def visita_edit(request, pk_vendedor, pk_visita):
+    visita = get_object_or_404(Visita, pk=pk_visita)
+    if request.method == "POST":
+        form = VisitaForm(request.POST, instance=visita)
+        if form.is_valid():
+            visita = form.save(commit=False)
+            visita.usuario = request.user
+            visita.fecha_modificacion = timezone.now()
+            visita.save()
+            return redirect('perfil_vendedor', pk=pk_vendedor)
+    else:
+        form = VisitaForm(instance=visita)
+
+    return render(request, 'CATEDRA/visita_edit.html', {'form': form})

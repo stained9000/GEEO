@@ -1,0 +1,110 @@
+{% extends 'CATEDRA/base.html' %}
+
+{% block content %}
+<div class="row grid-responsive">
+  <div class="column page-heading">
+    <div class="large-card clearfix">
+      <div class="float-left">
+        <h2>{{vendedor.usuario.first_name}} {{vendedor.usuario.last_name}}</h2>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="row grid-responsive">
+  <div class="column column-60">
+    <div class="card">
+      <div class="card-title clearfix">
+          <h3 class="float-left">Datos Generales</h3>
+      </div>
+      <div class="card-block">
+        <table>
+          <tr>
+            <td>Nombre</td>
+            <td>{{vendedor.usuario.first_name}}</td>
+          </tr>
+          <tr>
+            <td>Apellidos</td>
+            <td>{{vendedor.usuario.last_name}}</td>
+          </tr>
+          <tr>
+            <td>E-mail</td>
+            <td>{{vendedor.usuario.email}}</td>
+          </tr>
+          <tr>
+            <td>Rol</td>
+            <td>{{vendedor.rol}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="column column-40">
+  <div class="card">
+    <div class="card-title clearfix">
+      <h3 class="float-left">Avatar</h3>
+    </div> <!--End class title -->
+    <div class="card-block">
+      <img src="{{ vendedor.avatar.url }}" alt="" style='max-height: 220px;'>
+    </div> <!-- End card-block -->
+  </div> <!-- End card -->
+</div> <!--End column -->
+</div> <!-- End row -->
+
+<div class="row grid-responsive">
+  <div class="column">
+    <div class="card">
+      <div class="card-title clearfix">
+        <h3 class="float-left">Historial de Visitas</h3>
+        {% if user.is_authenticated %}
+          <a class="button float-right" href="#"><span class="fa fa-pencil"></span> Crear</a>
+        {% endif %}
+      </div> <!-- End card-title -->
+      <div class="card-block">
+        <table>
+          <thead>
+            <th>Fecha</th>
+            <th>Escuela</th>
+            <th>Anotaciones</th>
+            <th>Acciones</th>
+          </thead>
+          <tbody>
+            {% for visita in visitas %}
+            <tr>
+              <td>{{visita.fecha}}</td>
+              <td>{{visita.escuela.nombre}}</td>
+              <td>{{visita.anotaciones}}</td>
+              <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a class="button button-outline" href="{% url 'visita_edit' pk_vendedor=vendedor.pk pk_visita=visita.pk %}">Editar</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div> <!-- End card-block -->
+    </div> <!-- End card -->
+  </div> <!--End column -->
+</div> <!-- End row -->
+
+
+<div class="row grid-responsive">
+  <div class="column column-50">
+    <div class="card">
+      <div class="card-title clearfix">
+        <h3>Ventas del mes</h3>
+      </div> <!-- End card-title -->
+      <div class="card-block">
+      </div> <!-- End card-block -->
+    </div> <!-- End card -->
+  </div> <!-- End column -->
+<div class="column column-50">
+    <div class="card">
+      <div class="card-title clearfix">
+        <h3>Indicadores de desempeño</h3>
+      </div> <!-- End card-title -->
+      <div class="card-block">
+      </div> <!-- End card-block -->
+    </div> <!-- End card -->
+  </div> <!-- End column -->
+</div> <!-- End Row -->
+</div>
+{% endblock %}

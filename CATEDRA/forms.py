@@ -37,7 +37,7 @@ class VisitaForm(forms.ModelForm):
 
     class Meta:
         model = Visita
-        fields = ('fecha', 'anotaciones', 'hoja_de_visita')
+        fields = ('escuela', 'anotaciones', 'hoja_de_visita',)
 
 class ActividadForm(forms.ModelForm):
 
