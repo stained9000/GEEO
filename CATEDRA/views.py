@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Empleado
-from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezaForm, ActividadForm, VisitaForm, PresupuestoForm
+from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Empleado, Municipio, Propuesta, Ofrecimiento, CodigosDE
+from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezaForm, ActividadForm, VisitaForm, PresupuestoForm, PropuestaForm, OfrecimientoForm
 from django.utils import timezone
 from sodapy import Socrata
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -9,6 +9,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 def lista_escuelas(request):
 
     lista_escuelas = Escuela.objects.all()
+    total_escuelas = len(lista_escuelas)
     page = request.GET.get('page', 1)
 
     paginator = Paginator(lista_escuelas, 50)
@@ -20,7 +21,7 @@ def lista_escuelas(request):
     except EmptyPage:
         escuelas = paginator.page(paginator.num_pages)
 
-    return render(request, 'CATEDRA/lista_escuelas.html', {'escuelas': escuelas})
+    return render(request, 'CATEDRA/lista_escuelas.html', {'escuelas': escuelas, 'total_escuelas': total_escuelas})
 
 def inicio(request):
 
@@ -29,6 +30,7 @@ def inicio(request):
 def perfil_escuela(request, codigo):
 
     escuela = get_object_or_404(Escuela, codigo=codigo)
+    vendedor = Empleado.objects.filter(municipio__nombre__contains=escuela.municipio_escolar)[0]
 
     try:
         personal = Personal.objects.get(escuela=escuela)
@@ -50,13 +52,13 @@ def perfil_escuela(request, codigo):
         destrezas = 'Aún no se ha agregado información de destrezas a esta escuela.'
 
 
-    actividades = Actividad.objects.filter(escuela=escuela)
+    visitas = Visita.objects.filter(usuario=vendedor.usuario, escuela=escuela).order_by("-fecha")
 
-    if len(actividades) == 0:
-        actividades = 'Aún no se ha agregado información de actividades a esta escuela.'
+    if len(visitas) == 0:
+        visitas = 'Aún no se ha visitado esta escuela.'
 
 
-    return render(request, 'CATEDRA/perfil_escuela.html', {'escuela': escuela, 'personal': personal, 'matricula': matricula, 'total_maestros': total_maestros, 'destrezas': destrezas, 'actividades': actividades})
+    return render(request, 'CATEDRA/perfil_escuela.html', {'escuela': escuela, 'personal': personal, 'matricula': matricula, 'total_maestros': total_maestros, 'destrezas': destrezas, 'vendedor': vendedor, 'visitas': visitas})
 
 def crear_escuela(request):
     if request.method == "POST":
@@ -363,24 +365,45 @@ def lista_vendedores(request):
 def perfil_vendedor(request, pk):
 
     vendedor = get_object_or_404(Empleado, pk=pk)
-    visitas = Visita.objects.filter(usuario=vendedor.usuario)
+    visitas = Visita.objects.filter(usuario=vendedor.usuario).order_by("-fecha")[0:5]
+    municipios = vendedor.municipio.all()
+    municipios_lista_nombres = [municipio.nombre for municipio in municipios]
+    lista_escuelas = Escuela.objects.filter(municipio_escolar__in=municipios_lista_nombres)
+    total_escuelas = len(lista_escuelas)
+    propuestas = Propuesta.objects.filter(vendedor=vendedor)
 
-    return render(request, 'CATEDRA/perfil_vendedor.html', {'vendedor': vendedor, 'visitas': visitas,})
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(lista_escuelas, 6)
+
+    try:
+        escuelas = paginator.page(page)
+    except PageNotAnInteger:
+        escuelas = paginator.page(1)
+    except EmptyPage:
+        escuelas = paginator.page(paginator.num_pages)
+
+    return render(request, 'CATEDRA/perfil_vendedor.html', {'vendedor': vendedor, 'visitas': visitas, 'municipios': municipios, 'escuelas': escuelas, 'total_escuelas': total_escuelas, 'propuestas': propuestas})
 
 
 
-def crear_visita(request, pk_vendedor, pk_visita):
+def crear_visita(request, pk_vendedor):
+    empleado = Empleado.objects.get(pk=pk_vendedor)
+    municipios = empleado.municipio.all()
+    lista_municipios = [ municipio.nombre for municipio in municipios ]
+
     if request.method == "POST":
-        form = VisitaForm(request.POST)
+        form = VisitaForm(request.POST, request.FILES)
+        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
         if form.is_valid():
             visita = form.save(commit=False)
-            visita.escuela = Visita.objects.get(pk=pk_visita)
-            visita.usuario = request.user
+            visita.usuario = empleado.usuario
             visita.fecha_creacion = timezone.now()
             visita.save()
             return redirect('perfil_vendedor', pk=pk_vendedor)
     else:
         form = VisitaForm()
+        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
 
     return render(request, 'CATEDRA/visita_edit.html', {'form': form})
 
@@ -389,13 +412,75 @@ def visita_edit(request, pk_vendedor, pk_visita):
     visita = get_object_or_404(Visita, pk=pk_visita)
     if request.method == "POST":
         form = VisitaForm(request.POST, instance=visita)
+        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
         if form.is_valid():
             visita = form.save(commit=False)
-            visita.usuario = request.user
             visita.fecha_modificacion = timezone.now()
             visita.save()
             return redirect('perfil_vendedor', pk=pk_vendedor)
     else:
         form = VisitaForm(instance=visita)
+        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
 
     return render(request, 'CATEDRA/visita_edit.html', {'form': form})
+
+def historial_visitas(request, pk):
+    vendedor = get_object_or_404(Empleado, pk=pk)
+    visitas = Visita.objects.filter(usuario=vendedor.usuario).order_by("-fecha")
+
+    return render(request, 'CATEDRA/historial_visitas.html', {'vendedor': vendedor, 'visitas': visitas,})
+
+def crear_propuesta(request, pk_vendedor):
+    empleado = Empleado.objects.get(pk=pk_vendedor)
+    municipios = empleado.municipio.all()
+    lista_municipios = [ municipio.nombre for municipio in municipios ]
+
+    if request.method == "POST":
+        form = PropuestaForm(request.POST, request.FILES)
+        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
+        if form.is_valid():
+            propuesta = form.save(commit=False)
+            propuesta.vendedor = empleado
+            propuesta.save()
+            return redirect('perfil_vendedor', pk=pk_vendedor)
+    else:
+        form = PropuestaForm()
+        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
+
+    return render(request, 'CATEDRA/propuesta_edit.html', {'form': form})
+
+def propuesta_detalle(request, pk_propuesta):
+    propuesta = Propuesta.objects.get(pk=pk_propuesta)
+    personal = Personal.objects.get(escuela=propuesta.escuela)
+    ofrecimientos = Ofrecimiento.objects.filter(propuesta=propuesta)
+
+    costo_total = 0
+
+    for ofrecimiento in ofrecimientos:
+        if ofrecimiento.codigode.codigo == 11829:
+            costo_total += ofrecimiento.codigode.costo * ofrecimiento.participantes
+        else:
+            costo_total += ofrecimiento.codigode.costo
+
+    return render(request, 'CATEDRA/propuesta_detalle.html', {'propuesta': propuesta, 'personal': personal, 'ofrecimientos': ofrecimientos, 'costo_total': costo_total,})
+
+def crear_ofrecimiento(request, pk_propuesta):
+
+    if request.method == "POST":
+        form = OfrecimientoForm(request.POST, request.FILES)
+        if form.is_valid():
+            ofrecimiento = form.save(commit=False)
+            ofrecimiento.propuesta = Propuesta.objects.get(pk=pk_propuesta)
+            ofrecimiento.save()
+            return redirect('propuesta_detalle', pk_propuesta=pk_propuesta)
+    else:
+        form = OfrecimientoForm()
+
+    return render(request, 'CATEDRA/ofrecimiento_edit.html', {'form': form})
+
+
+def borrar_ofrecimiento(request, pk_propuesta, pk_ofrecimiento):
+    ofrecimiento = Ofrecimiento.objects.get(pk=pk_ofrecimiento)
+    ofrecimiento.delete()
+
+    return redirect('propuesta_detalle', pk_propuesta=pk_propuesta)

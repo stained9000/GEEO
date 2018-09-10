@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Escuela, Personal, Matricula, Destreza, Presupuesto, Visita, Actividad, Empleado
+from .models import Escuela, Personal, Matricula, Destreza, Presupuesto, Visita, Actividad, Empleado, Municipio, CodigosDE, Propuesta, Ofrecimiento
 
 # Register your models here.
 
@@ -26,3 +26,7 @@ admin.site.register(Destreza)
 admin.site.register(Presupuesto)
 admin.site.register(Visita)
 admin.site.register(Actividad)
+admin.site.register(Municipio)
+admin.site.register(CodigosDE)
+admin.site.register(Ofrecimiento)
+admin.site.register(Propuesta)

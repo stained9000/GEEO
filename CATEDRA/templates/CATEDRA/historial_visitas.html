@@ -6,31 +6,24 @@
   <div class="column ">
     <div class="card">
       <div class="card-title clearfix">
-        <h3 class="float-left">Perfiles de Escuelas Registradas ({{total_escuelas|format_thousands}})</h3>
-        {% if user.is_authenticated %}
-        <a class="button float-right" href="{% url 'crear_escuela' %}">Nueva Escuela</a>
-        {% endif %}
+        <h3 class="float-left">Historial de visitas de <a href="{% url 'perfil_vendedor' pk=vendedor.pk %}">{{vendedor.usuario.first_name}} {{vendedor.usuario.last_name}}</a></h3>
       </div>
       <div class="card-block">
         <table>
           <thead>
-            <th>Codigo</th>
-            <th>Nombre</th>
-            <th>Nivel</th>
-            <th>Region</th>
-            <th>Fecha de Creacion</th>
+            <th>Fecha</th>
+            <th>Escuela</th>
+            <th>Anotaciones</th>
             <th>Acciones</th>
           </thead>
           <tbody>
-            {% for escuela in escuelas %}
-              <tr>
-                <td>{{escuela.codigo}}</a></td>
-                <td>{{escuela.nombre}}</td>
-                <td>{{escuela.nivel}}</td>
-                <td>{{escuela.region_educativa}}</td>
-                <td>{{escuela.fecha_creacion}}</td>
-                <td><a class="button button-outline" href="{% url 'perfil_escuela' codigo=escuela.codigo %}">Ver</a></td>
-              </tr>
+            {% for visita in visitas %}
+            <tr>
+              <td>{{visita.fecha}}</td>
+              <td>{{visita.escuela.nombre}}</td>
+              <td>{{visita.anotaciones}}</td>
+              <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="{% url 'visita_edit' pk_vendedor=vendedor.pk pk_visita=visita.pk %}"><em class="fa fa-edit"></em></a></td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>

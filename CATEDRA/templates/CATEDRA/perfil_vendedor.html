@@ -36,6 +36,14 @@
             <td>Rol</td>
             <td>{{vendedor.rol}}</td>
           </tr>
+          <tr>
+            <td>Municipios</td>
+            <td>
+            {% for municipio in municipios %}
+              {{municipio.nombre}},
+            {% endfor %}
+            </td>
+          </tr>
         </table>
       </div>
     </div>
@@ -43,10 +51,10 @@
   <div class="column column-40">
   <div class="card">
     <div class="card-title clearfix">
-      <h3 class="float-left">Avatar</h3>
+      <h3 class="float-left">Imagen de perfil</h3>
     </div> <!--End class title -->
     <div class="card-block">
-      <img src="{{ vendedor.avatar.url }}" alt="" style='max-height: 220px;'>
+      <img src="{{ vendedor.avatar.url }}" alt="" style='height: 270px;'>
     </div> <!-- End card-block -->
   </div> <!-- End card -->
 </div> <!--End column -->
@@ -56,30 +64,57 @@
   <div class="column">
     <div class="card">
       <div class="card-title clearfix">
-        <h3 class="float-left">Historial de Visitas</h3>
-        {% if user.is_authenticated %}
-          <a class="button float-right" href="#"><span class="fa fa-pencil"></span> Crear</a>
-        {% endif %}
+        <h3>Escuelas asignadas ({{total_escuelas}})</h3>
       </div> <!-- End card-title -->
       <div class="card-block">
         <table>
           <thead>
-            <th>Fecha</th>
-            <th>Escuela</th>
-            <th>Anotaciones</th>
+            <th>Codigo</th>
+            <th>Municipio</th>
+            <th>Nombre</th>
+            <th>Ultima Visita</th>
             <th>Acciones</th>
           </thead>
           <tbody>
-            {% for visita in visitas %}
-            <tr>
-              <td>{{visita.fecha}}</td>
-              <td>{{visita.escuela.nombre}}</td>
-              <td>{{visita.anotaciones}}</td>
-              <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a class="button button-outline" href="{% url 'visita_edit' pk_vendedor=vendedor.pk pk_visita=visita.pk %}">Editar</a></td>
-            </tr>
+            {% for escuela in escuelas %}
+              <tr>
+                <td>{{escuela.codigo}}</td>
+                <td>{{escuela.municipio_escolar}}</td>
+                <td>{{escuela.nombre}}</td>
+                <td>{{escuela.visita_set.latest.fecha}}</td>
+                <td><a class="button button-outline" href="{% url 'perfil_escuela' codigo=escuela.codigo %}">Ver</a></td>
+              </tr>
             {% endfor %}
           </tbody>
         </table>
+        <!-- Pagination -->
+        {% if escuelas.has_other_pages %}
+        <table>
+          <td>
+            {% if escuelas.has_previous %}
+              <a class="page-link" href="?page={{ escuelas.previous_page_number }}">&laquo;</a>
+            {% else %}
+                <span>&laquo;</span>
+            {% endif %}
+          </td>
+          {% for i in escuelas.paginator.page_range %}
+          <td>
+              {% if escuelas.number == i %}
+                  <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+              {% else %}
+                  <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+              {% endif %}
+          </td>
+          {% endfor %}
+          <td>
+            {% if escuelas.has_next %}
+                <a class="page-link" href="?page={{ escuelas.next_page_number }}">&raquo;</a>
+            {% else %}
+                <span>&raquo;</span>
+            {% endif %}
+          </td>
+        </table>
+        {% endif %}
       </div> <!-- End card-block -->
     </div> <!-- End card -->
   </div> <!--End column -->
@@ -90,20 +125,64 @@
   <div class="column column-50">
     <div class="card">
       <div class="card-title clearfix">
-        <h3>Ventas del mes</h3>
+        <h3 class="float-left">Propuestas</h3>
+        <a class="button float-right" href="{% url 'crear_propuesta' pk_vendedor=vendedor.pk %}"><span class="fa fa-pencil"></span> Crear</a>
+        <a class="button float-right" href="#"><span class="fa fa-history"></span> Historial</a>
       </div> <!-- End card-title -->
       <div class="card-block">
+        <table>
+          <thead>
+            <th>Numero</th>
+            <th>Fecha</th>
+            <th>Escuela</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </thead>
+          <tbody>
+            {% for propuesta in propuestas %}
+              <tr>
+                <td>{{propuesta.pk}}</td>
+                <td>{{propuesta.fecha}}</td>
+                <td>{{propuesta.escuela.nombre}}</td>
+                <td></td>
+                <td><a class="button button-outline" href="{% url 'propuesta_detalle' pk_propuesta=propuesta.pk %}">Ver</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div> <!-- End card-block -->
     </div> <!-- End card -->
   </div> <!-- End column -->
 <div class="column column-50">
-    <div class="card">
-      <div class="card-title clearfix">
-        <h3>Indicadores de desempeño</h3>
-      </div> <!-- End card-title -->
-      <div class="card-block">
-      </div> <!-- End card-block -->
-    </div> <!-- End card -->
+  <div class="card">
+    <div class="card-title clearfix">
+      <h3 class="float-left">Ultimas Visitas</h3>
+      {% if user.is_authenticated %}
+        <a class="button float-right" href="{% url 'crear_visita' pk_vendedor=vendedor.pk %}"><span class="fa fa-pencil"></span> Crear</a>
+        <a class="button float-right" href="{% url 'historial_visitas' pk=vendedor.pk %}"><span class="fa fa-history"></span> Historial</a>
+      {% endif %}
+    </div> <!-- End card-title -->
+    <div class="card-block">
+      <table>
+        <thead>
+          <th>Fecha</th>
+          <th>Escuela</th>
+          <th>Anotaciones</th>
+          <th>Acciones</th>
+        </thead>
+        <tbody>
+          {% for visita in visitas %}
+          <tr>
+            <td>{{visita.fecha}}</td>
+            <td>{{visita.escuela.nombre}}</td>
+            <td>{{visita.anotaciones}}</td>
+            <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="{% url 'visita_edit' pk_vendedor=vendedor.pk pk_visita=visita.pk %}"><em class="fa fa-edit"></em></a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div> <!-- End card-block -->
+  </div> <!-- End card -->
   </div> <!-- End column -->
 </div> <!-- End Row -->
 </div>

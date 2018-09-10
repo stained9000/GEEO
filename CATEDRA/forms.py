@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita
+from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Propuesta, Ofrecimiento
 
 class EscuelaForm(forms.ModelForm):
 
@@ -44,3 +44,15 @@ class ActividadForm(forms.ModelForm):
     class Meta:
         model = Actividad
         fields = ('estado', 'tipo', 'taller_sugerido', 'fecha', 'horario',)
+
+class PropuestaForm(forms.ModelForm):
+
+    class Meta:
+        model = Propuesta
+        fields = ('escuela', 'fecha',)
+
+class OfrecimientoForm(forms.ModelForm):
+
+    class Meta:
+        model = Ofrecimiento
+        fields = ('codigode', 'materia', 'estrategia', 'titulo', 'horas', 'participantes' )

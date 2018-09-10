@@ -6,6 +6,104 @@ from django.contrib.auth.models import User
 
 
 # Create your models here.
+class Municipio(models.Model):
+    nombre_choices = (
+    ('ADJUNTAS', 'ADJUNTAS'),
+    ('AGUADA', 'AGUADA'),
+    ('AGUADILLA', 'AGUADILLA'),
+    ('AGUAS BUENAS', 'AGUAS BUENAS'),
+    ('AGUAS BUENAS', 'AGUAS BUENAS'),
+    ('ANASCO', 'ANASCO'),
+    ('ARECIBO I', 'ARECIBO I'),
+    ('ARECIBO II', 'ARECIBO II'),
+    ('ARROYO', 'ARROYO'),
+    ('BARCELONETA', 'BARCELONETA'),
+    ('BARRANQUITAS', 'BARRANQUITAS'),
+    ('BAYAMON I', 'BAYAMON I'),
+    ('BAYAMON II', 'BAYAMON II'),
+    ('BAYAMON III', 'BAYAMON III'),
+    ('CABO ROJO', 'CABO ROJO'),
+    ('CAGUAS I', 'CAGUAS I'),
+    ('CAGUAS II', 'CAGUAS II'),
+    ('CAMUY', 'CAMUY'),
+    ('CANOVANAS', 'CANOVANAS'),
+    ('CAROLINA I', 'CAROLINA I'),
+    ('CAROLINA II', 'CAROLINA II'),
+    ('CATANO', 'CATANO'),
+    ('CAYEY', 'CAYEY'),
+    ('CEIBA', 'CEIBA'),
+    ('CIALES', 'CIALES'),
+    ('CIDRA', 'CIDRA'),
+    ('COAMO', 'COAMO'),
+    ('COMERIO', 'COMERIO'),
+    ('COROZAL', 'COROZAL'),
+    ('CULEBRA', 'CULEBRA'),
+    ('DORADO', 'DORADO'),
+    ('FAJARDO', 'FAJARDO'),
+    ('FLORIDA', 'FLORIDA'),
+    ('GUANICA', 'GUANICA'),
+    ('GUAYAMA', 'GUAYAMA'),
+    ('GUAYANILLA', 'GUAYANILLA'),
+    ('GUAYNABO', 'GUAYNABO'),
+    ('GURABO', 'GURABO'),
+    ('HATILLO', 'HATILLO'),
+    ('HORMIGUEROS', 'HORMIGUEROS'),
+    ('HUMACAO', 'HUMACAO'),
+    ('ISABELA', 'ISABELA'),
+    ('JAYUYA', 'JAYUYA'),
+    ('JUANA DIAZ', 'JUANA DIAZ'),
+    ('JUNCOS', 'JUNCOS'),
+    ('LAJAS', 'LAJAS'),
+    ('LARES', 'LARES'),
+    ('LAS MARIAS', 'LAS MARIAS'),
+    ('LAS PIEDRAS', 'LAS PIEDRAS'),
+    ('LOIZA', 'LOIZA'),
+    ('LUQUILLO', 'LUQUILLO'),
+    ('MANATI', 'MANATI'),
+    ('MARICAO', 'MARICAO'),
+    ('MAUNABO', 'MAUNABO'),
+    ('MAYAGUEZ', 'MAYAGUEZ'),
+    ('MOCA', 'MOCA'),
+    ('MOROVIS', 'MOROVIS'),
+    ('NAGUABO', 'NAGUABO'),
+    ('NARANJITO', 'NARANJITO'),
+    ('OROCOVIS', 'OROCOVIS'),
+    ('PATILLAS', 'PATILLAS'),
+    ('PEÑUELAS', 'PEÑUELAS'),
+    ('PONCE I', 'PONCE I'),
+    ('PONCE II', 'PONCE II'),
+    ('PONCE III', 'PONCE III'),
+    ('QUEBRADILLAS', 'QUEBRADILLAS'),
+    ('RINCON', 'RINCON'),
+    ('RIO GRANDE', 'RIO GRANDE'),
+    ('SABANA GRANDE', 'SABANA GRANDE'),
+    ('SALINAS', 'SALINAS'),
+    ('SAN GERMAN', 'SAN GERMAN'),
+    ('SAN JUAN I', 'SAN JUAN I'),
+    ('SAN JUAN II', 'SAN JUAN II'),
+    ('SAN JUAN III', 'SAN JUAN III'),
+    ('SAN JUAN IV', 'SAN JUAN IV'),
+    ('SAN JUAN V', 'SAN JUAN V'),
+    ('SAN LORENZO', 'SAN LORENZO'),
+    ('SAN SEBASTIAN', 'SAN SEBASTIAN'),
+    ('SANTA ISABEL', 'SANTA ISABEL'),
+    ('TOA ALTA', 'TOA ALTA'),
+    ('TOA BAJA', 'TOA BAJA'),
+    ('TRUJILLO ALTO', 'TRUJILLO ALTO'),
+    ('UTUADO', 'UTUADO'),
+    ('VEGA ALTA', 'VEGA ALTA'),
+    ('VEGA BAJA', 'VEGA BAJA'),
+    ('VIEQUES', 'VIEQUES'),
+    ('VILLALBA', 'VILLALBA'),
+    ('YABUCOA', 'YABUCOA'),
+    ('YAUCO', 'YAUCO'),
+    )
+
+    nombre = models.CharField(max_length=200, choices=nombre_choices)
+
+    def __str__(self):
+        return self.nombre
+
 
 class Escuela(models.Model):
     phone_regex = RegexValidator(
@@ -265,6 +363,8 @@ class Visita(models.Model):
     def __str__(self):
         return "Visita a la escuela " + self.escuela.nombre
 
+    class Meta:
+        get_latest_by = "fecha"
 
 class Actividad(models.Model):
     estado_choices = (
@@ -306,9 +406,37 @@ class Empleado(models.Model):
     ('Vendedor', 'Vendedor'),
     )
 
+
     def upload_to(instance, filename):
         return 'imagenes/%s/%s' % (instance.usuario.username, filename)
 
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     rol = models.CharField(max_length=200, choices=rol_choices, default='Vendedor')
     avatar = models.ImageField(upload_to=upload_to, null=True, blank=True)
+    municipio = models.ManyToManyField(Municipio, blank=True)
+
+    def __str__(self):
+        return self.usuario.first_name + self.usuario.last_name
+
+class Propuesta(models.Model):
+    escuela = models.ForeignKey(Escuela, on_delete=models.CASCADE)
+    vendedor = models.ForeignKey(Empleado, on_delete=models.CASCADE)
+    fecha = models.DateField(default=timezone.now)
+
+class CodigosDE(models.Model):
+    codigo = models.IntegerField(primary_key=True)
+    modalidad = models.CharField(max_length=200)
+    descripcion = models.CharField(max_length=200)
+    costo = models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.codigo) + " " + self.modalidad
+
+class Ofrecimiento(models.Model):
+    propuesta = models.ForeignKey(Propuesta, on_delete=models.CASCADE, null=True, blank=True)
+    codigode = models.ForeignKey(CodigosDE, on_delete=models.CASCADE)
+    materia = models.CharField(max_length=200)
+    estrategia = models.CharField(max_length=200)
+    titulo = models.CharField(max_length=200)
+    horas = models.IntegerField(default=0)
+    participantes = models.IntegerField(default=0)
