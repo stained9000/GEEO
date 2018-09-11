@@ -49,7 +49,7 @@ class PropuestaForm(forms.ModelForm):
 
     class Meta:
         model = Propuesta
-        fields = ('escuela', 'fecha',)
+        fields = ('escuela', 'fecha', 'estado',)
 
 class OfrecimientoForm(forms.ModelForm):
 

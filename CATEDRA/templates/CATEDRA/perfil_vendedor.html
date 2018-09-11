@@ -144,7 +144,7 @@
                 <td>{{propuesta.pk}}</td>
                 <td>{{propuesta.fecha}}</td>
                 <td>{{propuesta.escuela.nombre}}</td>
-                <td></td>
+                <td>{{propuesta.estado}}</td>
                 <td><a class="button button-outline" href="{% url 'propuesta_detalle' pk_propuesta=propuesta.pk %}">Ver</a></td>
               </tr>
             {% endfor %}

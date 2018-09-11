@@ -5,6 +5,21 @@ from django.utils import timezone
 from sodapy import Socrata
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter, landscape
+import time
+from reportlab.lib.enums import TA_JUSTIFY
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib.utils import ImageReader
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
+
 # Create your views here.
 def lista_escuelas(request):
 
@@ -30,7 +45,11 @@ def inicio(request):
 def perfil_escuela(request, codigo):
 
     escuela = get_object_or_404(Escuela, codigo=codigo)
-    vendedor = Empleado.objects.filter(municipio__nombre__contains=escuela.municipio_escolar)[0]
+
+    try:
+        vendedor = Empleado.objects.filter(municipio__nombre__contains=escuela.municipio_escolar)[0]
+    except:
+        vendedor = 'Esta escuela no tiene vendedor asignado.'
 
     try:
         personal = Personal.objects.get(escuela=escuela)
@@ -52,7 +71,7 @@ def perfil_escuela(request, codigo):
         destrezas = 'Aún no se ha agregado información de destrezas a esta escuela.'
 
 
-    visitas = Visita.objects.filter(usuario=vendedor.usuario, escuela=escuela).order_by("-fecha")
+    visitas = Visita.objects.filter(escuela=escuela).order_by("-fecha")
 
     if len(visitas) == 0:
         visitas = 'Aún no se ha visitado esta escuela.'
@@ -372,6 +391,13 @@ def perfil_vendedor(request, pk):
     total_escuelas = len(lista_escuelas)
     propuestas = Propuesta.objects.filter(vendedor=vendedor)
 
+    ventas_totales: 0
+    for propuesta in propuestas:
+        ofrecimientos = propuesta.ofrecimiento__set.all()
+        for ofrecimiento in ofrecimientos:
+            if ofrecimiento.codigode.codigo == 11829:
+                ventas_totales += ofrecimiento.codigode.costo
+
     page = request.GET.get('page', 1)
 
     paginator = Paginator(lista_escuelas, 6)
@@ -442,12 +468,32 @@ def crear_propuesta(request, pk_vendedor):
             propuesta = form.save(commit=False)
             propuesta.vendedor = empleado
             propuesta.save()
-            return redirect('perfil_vendedor', pk=pk_vendedor)
+            return redirect('propuesta_detalle', pk_propuesta=propuesta.pk)
     else:
         form = PropuestaForm()
         form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
 
     return render(request, 'CATEDRA/propuesta_edit.html', {'form': form})
+
+def propuesta_edit(request, pk_vendedor, pk_propuesta):
+    empleado = Empleado.objects.get(pk=pk_vendedor)
+    municipios = empleado.municipio.all()
+    lista_municipios = [ municipio.nombre for municipio in municipios ]
+    propuesta = get_object_or_404(Propuesta, pk=pk_propuesta)
+
+    if request.method == "POST":
+        form = PropuestaForm(request.POST, instance=propuesta)
+        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
+        if form.is_valid():
+            propuesta = form.save(commit=False)
+            propuesta.save()
+            return redirect('propuesta_detalle', pk_propuesta=pk_propuesta)
+    else:
+        form = PropuestaForm(instance=propuesta)
+        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
+
+    return render(request, 'CATEDRA/propuesta_edit.html', {'form': form})
+
 
 def propuesta_detalle(request, pk_propuesta):
     propuesta = Propuesta.objects.get(pk=pk_propuesta)
@@ -484,3 +530,144 @@ def borrar_ofrecimiento(request, pk_propuesta, pk_ofrecimiento):
     ofrecimiento.delete()
 
     return redirect('propuesta_detalle', pk_propuesta=pk_propuesta)
+
+def propuesta_pdf(request, pk_propuesta):
+    from reportlab.lib.units import inch
+
+    propuesta = Propuesta.objects.get(pk=pk_propuesta)
+    personal = Personal.objects.get(escuela=propuesta.escuela)
+    ofrecimientos = Ofrecimiento.objects.filter(propuesta=propuesta)
+
+    def xstr(s):
+        if s is None:
+            return ''
+        else:
+            return str(s)
+
+    def format_thousands(value):
+        if value == None:
+            return None
+        else:
+            try:
+                return "$ {:,}".format(value)
+            except:
+                return None
+
+     # Create the HttpResponse object with the appropriate PDF headers.
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
+
+    buffer = BytesIO()
+
+    # Create the PDF object, using the BytesIO object as its "file."
+    p = canvas.Canvas(buffer, pagesize=landscape(letter))
+    width, height = letter
+    # Draw things on the PDF. Here's where the PDF generation happens.
+    # See the ReportLab documentation for the full list of functionality.
+    image = ImageReader('https://www.geeopr.com/index_htm_files/63.png')
+    p.setLineWidth(.3)
+    p.setFont('Helvetica', 12)
+    p.translate(inch,inch*7.5)
+
+    #Titulo
+    p.drawImage(image, 0, -30, width=100, height=100, mask='auto')
+    p.drawString(144, 0, 'PROPUESTA DE TALLERES DE ADECUACION PROFESIONAL')
+
+    #Linea 1
+    p.setFont('Helvetica', 10)
+    p.drawString(0,-36,'Escuela: ' + propuesta.escuela.nombre)
+    p.line(40, -38, 203, -38)
+
+    p.drawString(216,-36,'Codigo: ' + xstr(propuesta.escuela.codigo))
+    p.line(254,-38,417,-38)
+
+    p.drawString(430, -36, 'Tel/Fax: ' + propuesta.escuela.telefono)
+    p.line(470, -38, 650, -38)
+
+    #Linea 2
+    p.drawString(0, -72, 'Region Educativa: ' + propuesta.escuela.region_educativa)
+    p.line(84, -74, 203, -74)
+
+    p.drawString(216, -72, 'Distrito: ' + propuesta.escuela.distrito_escolar)
+    p.line(254, -74, 417, -74)
+
+    p.drawString(430, -72, 'Direccion: ' + propuesta.escuela.direccion_fisica)
+    p.line(477, -74, 650, -74)
+
+    #Linea 3
+    p.drawString(0, -108, "Director(a): " + xstr(personal.nombre_del_director))
+    p.line(53, -110, 203, -110)
+
+    p.drawString(216, -108, 'E-mail: ' + xstr(personal.email_del_director))
+    p.line(250, -110, 417, -110)
+
+    #table
+    costo_total = 0
+    data= [['Participantes', 'Materia', 'Modalidad/Codigo', 'Estrategia', 'Titulo', 'Horas', 'Costo', 'Total'],
+           ]
+
+    for ofrecimiento in ofrecimientos:
+        if ofrecimiento.codigode.codigo == 11829:
+            costo_total += ofrecimiento.codigode.costo * ofrecimiento.participantes
+            data.append([str(ofrecimiento.participantes), ofrecimiento.materia, str(ofrecimiento.codigode.codigo), ofrecimiento.estrategia, ofrecimiento.titulo, str(ofrecimiento.horas), str(format_thousands(ofrecimiento.codigode.costo)), str(format_thousands(ofrecimiento.codigode.costo*ofrecimiento.participantes))])
+        else:
+            costo_total += ofrecimiento.codigode.costo
+            data.append([str(ofrecimiento.participantes), ofrecimiento.materia, str(ofrecimiento.codigode.codigo), ofrecimiento.estrategia, ofrecimiento.titulo, str(ofrecimiento.horas), str(format_thousands(ofrecimiento.codigode.costo)), str(format_thousands(ofrecimiento.codigode.costo))])
+
+    data.append(['', '', '', '', '', '', 'Total', str(format_thousands(costo_total)),])
+
+    s = getSampleStyleSheet()
+    s = s["BodyText"]
+    s.wordWrap = 'CJK'
+    data2 = [[Paragraph(cell, s) for cell in row] for row in data]
+    t=Table(data2, colWidths=[inch*0.8, inch*0.8, inch*0.9, inch*1, inch*3, inch*0.6, inch*1, inch*1],  rowHeights=inch*0.6)
+
+    t.setStyle(TableStyle([('ALIGN',(0,0),(-1,1),'CENTER'),
+                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                        ('SPAN',(0,-1),(-3,-1)),
+                        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                        ]))
+    tableheight = len(data) * inch * 0.6 + 140
+
+    t.wrap(648, 358)
+    t.drawOn(p, 0, -tableheight)
+
+    #Firma
+    p.drawString(0, -435, 'Firma: ')
+    p.line(30, -437, 180, -437)
+
+    p.drawString(216, -435, 'Fecha Servicio: ')
+    p.line(287,-437,394,-437)
+
+    #Footer
+    p.line(0, -455, 650, -455)
+    p.line(0, -455, 0, -530)
+    p.line(0, -530, 650, -530)
+    p.line(650, -455, 650, -530)
+
+    p.drawString(260, -473, 'Representante de Servicio')
+    p.drawString(5, -491, 'Compañia: Global Education Exchange Opportunities, Inc.')
+    p.line(55, -493, 265, -493)
+
+    p.drawString(342, -491, 'SS Patronal: 660723113')
+    p.line(400, -493, 453, -493)
+
+    p.drawString(530, -491, 'E-mail: info@geeopr.com')
+    p.line(564, -493, 644, -493)
+
+    p.drawString(5, -509, 'Nombre Representante: ' + propuesta.vendedor.usuario.first_name + " " + propuesta.vendedor.usuario.last_name)
+    p.line(115, -511, 265, -511)
+
+    p.drawString(342, -509, 'Telefono: ' + propuesta.vendedor.telefono)
+    p.line(387, -511, 455, -511)
+
+    # Close the PDF object cleanly.
+    p.showPage()
+    p.save()
+
+    # Get the value of the BytesIO buffer and write it to the response.
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+    return response

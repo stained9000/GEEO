@@ -23,7 +23,9 @@ urlpatterns = [
     path('visita/<int:pk_vendedor>+<int:pk_visita>/editar/', views.visita_edit, name='visita_edit'),
     path('vendedor/<int:pk>/historial_visitas', views.historial_visitas, name='historial_visitas'),
     path('vendedor/<int:pk_vendedor>/propuesta/crear', views.crear_propuesta, name='crear_propuesta'),
+    path('vendedor/<int:pk_vendedor>/propuesta/<int:pk_propuesta>/editar', views.propuesta_edit, name='propuesta_edit'),
     path('propuesta/<int:pk_propuesta>/', views.propuesta_detalle, name='propuesta_detalle'),
     path('propuesta/<int:pk_propuesta>/ofrecimiento/<int:pk_ofrecimiento>/borrar', views.borrar_ofrecimiento, name='borrar_ofrecimiento'),
     path('propuesta/<int:pk_propuesta>/ofrecimiento/crear/', views.crear_ofrecimiento, name='crear_ofrecimiento'),
+    path('propuesta/<int:pk_propuesta>/pdf/', views.propuesta_pdf, name='propuesta_pdf')
 ]

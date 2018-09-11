@@ -54,7 +54,11 @@
           </tr>
           <tr>
             <td>Vendedor Asignado</td>
+            {% if vendedor == 'Esta escuela no tiene vendedor asignado.' %}
+            <td>{{vendedor}}</td>
+            {% else %}
             <td><a href="{% url 'perfil_vendedor' pk=vendedor.pk %}">{{vendedor.usuario.first_name}} {{vendedor.usuario.last_name}}</a></td>
+            {% endif %}
           </tr>
         </table>
       </div>
@@ -307,7 +311,11 @@
             <td>{{visita.fecha}}</td>
             <td>{{visita.escuela.nombre}}</td>
             <td>{{visita.anotaciones}}</td>
+            {%if vendedor == 'Esta escuela no tiene vendedor asignado.' %}
+            <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="#"><em class="fa fa-edit"></em></a></td>
+            {% else %}
             <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="{% url 'visita_edit' pk_vendedor=vendedor.pk pk_visita=visita.pk %}"><em class="fa fa-edit"></em></a></td>
+            {% endif %}
           </tr>
           {% endfor %}
         </tbody>

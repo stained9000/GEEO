@@ -156,7 +156,7 @@ class Escuela(models.Model):
     nivel = models.CharField(max_length=200, choices=nivel_choices, default='Elemental')
     grados = models.CharField(max_length=200, null=True, blank=True)
     tipo = models.CharField(max_length=200, choices=tipo_choices, default='Regular')
-
+    email = models.EmailField(max_length=254, null=True, blank=True)
 
     # Datos de creacion y modificacion del registro
     fecha_creacion = models.DateTimeField(default=timezone.now)
@@ -406,6 +406,11 @@ class Empleado(models.Model):
     ('Vendedor', 'Vendedor'),
     )
 
+    phone_regex = RegexValidator(
+                    regex='^\([0-9]{3}\) [0-9]{3}-[0-9]{4}$',
+                    message="El telefono debe ser suministrado con el siguiente formato: '(787) 549-1004'."
+                    )
+
 
     def upload_to(instance, filename):
         return 'imagenes/%s/%s' % (instance.usuario.username, filename)
@@ -414,14 +419,24 @@ class Empleado(models.Model):
     rol = models.CharField(max_length=200, choices=rol_choices, default='Vendedor')
     avatar = models.ImageField(upload_to=upload_to, null=True, blank=True)
     municipio = models.ManyToManyField(Municipio, blank=True)
+    telefono = models.CharField(validators=[phone_regex], max_length=200, default='(000) 000-0000')
 
     def __str__(self):
         return self.usuario.first_name + self.usuario.last_name
 
 class Propuesta(models.Model):
+    estado_choices = (
+    ('CREADA', 'CREADA'),
+    ('EN EVALUACION', 'EN EVALUACION'),
+    ('RECHAZADA', 'RECHAZADA'),
+    ('NO INTERES', 'NO INTERES'),
+    ('P.O. GENERADO', 'P.O. GENERADO'),
+    )
+
     escuela = models.ForeignKey(Escuela, on_delete=models.CASCADE)
     vendedor = models.ForeignKey(Empleado, on_delete=models.CASCADE)
     fecha = models.DateField(default=timezone.now)
+    estado = models.CharField(max_length=200, choices=estado_choices, default='CREADA')
 
 class CodigosDE(models.Model):
     codigo = models.IntegerField(primary_key=True)
