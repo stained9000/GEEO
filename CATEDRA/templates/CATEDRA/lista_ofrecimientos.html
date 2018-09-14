@@ -1,0 +1,64 @@
+
+{% extends 'CATEDRA/base.html' %}
+
+{% block content %}
+<div class="contenido" style="display: none;">
+  <div class="row grid-responsive">
+    <div class="column ">
+      <div class="card">
+        <div class="card-title clearfix">
+          {% if user.empleado.rol == 'Administrativo' %}
+          <h3 class="float-left">Listado de Ofrecimientos</h3>
+          {% else %}
+          <h3 class="float-left">Listado de Ofrecimientos - <a href="{% url 'perfil_vendedor' pk=user.empleado.pk %}">{{ user.first_name }} {{ user.last_name }}</a></h3>
+          {% endif %}
+        </div>
+        <div class="card-block">
+          <table id="" class="display">
+            <thead>
+              <tr>
+                <th>Codigo Ofrecimiento</th>
+                <th>Codigo Propuesta</th>
+                <th>Modalidad/Codigo</th>
+                <th>Titulo</th>
+                <th>Ingreso Total</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ofrecimiento in ofrecimientos %}
+                <tr>
+                  <td><a href="#">{{ofrecimiento.pk}}</a></td>
+                  <td><a href="{% url 'propuesta_detalle' pk_propuesta=ofrecimiento.propuesta.pk %}">{{ofrecimiento.propuesta.pk}}</a></td>
+                  <td>{{ofrecimiento.codigode}}</td>
+                  <td>{{ofrecimiento.titulo}}</td>
+                  {% if ofrecimiento.codigode.codigo == 11829 %}
+                  <td>${{ofrecimiento.codigode.costo|multiply:ofrecimiento.participantes|format_thousands}}</td>
+                  {% else %}
+                  <td>${{ofrecimiento.codigode.costo|format_thousands}}</td>
+                  {% endif %}
+                  <td>{{ofrecimiento.propuesta.fecha}}</td>
+                  <td>{{ofrecimiento.estado}}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Codigo Ofrecimiento</th>
+                <th>Codigo Propuesta</th>
+                <th>Modalidad/Codigo</th>
+                <th>Titulo</th>
+                <th>Ingreso Total</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

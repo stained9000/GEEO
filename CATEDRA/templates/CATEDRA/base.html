@@ -1,5 +1,5 @@
 {% load static %}
-{% load absolute format_capitalize format_percent format_thousands my_filters subtract to_datetime to_range_loss to_range multiply%}
+{% load absolute format_capitalize format_percent format_thousands my_filters subtract to_datetime to_range_loss to_range multiply count_visitas string_truncate format_mayus %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,16 +22,26 @@
 	<!-- Main Styles -->
 	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
+	<script src="{% static '/js/jquery-3.3.1.min.js' %}"></script>
+
+	<link rel="stylesheet" type="text/css" href="{% static '/js/DataTables/datatables.min.css' %}"/>
+
+	<script type="text/javascript" src="{% static '/js/DataTables/datatables.min.js' %}"></script>
+
+
+
+
 	<!--[if lt IE 9]>
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
+
 
 </head>
 
 <body>
 	<div class="navbar">
 		<div class="row">
-			<div class="column column-30 col-site-title"><a href="#" class="site-title float-left">GEEO / CATEDRA</a></div>
+			<div class="column column-30 col-site-title"><a href="#" class="site-title float-left"><span class="fa fa-globe" style="font-size: 40px;"></span> GEEO / CATEDRA</a></div>
 			<div class="column column-40 col-search"><a href="#" class="search-btn fa fa-search"></a>
 				<input type="text" name="" value="" placeholder="Buscar..." />
 			</div>
@@ -58,11 +68,17 @@
 			<h5>Menú Principal</h5>
 			<ul>
 				<li><a href="{% url 'inicio' %}"><em class="fa fa-home"></em> Inicio</a></li>
-				<li><a href="{% url 'lista_escuelas' %}"><em class="fa fa-building"></em> Escuelas</a></li>
-				<li><a href="{% url 'lista_vendedores' %}"><em class="fa fa-users"></em> Vendedores</a></li>
-				<li><a href="#"><em class="fa fa-random"></em> Destrezas</a></li>
-				<li><a href="#"><em class="fa fa-calendar"></em> Actividades</a></li>
-				<li><a href="#"><em class="fa fa-book"></em> Matrícula</a></li>
+				{% if user.is_authenticated %}
+					{% if user.empleado.rol == 'Vendedor'%}
+					<li><a href="{% url 'historial_propuestas' pk=user.empleado.pk %}"><em class="fa fa-balance-scale"></em> Propuestas</a></li>
+					{% else %}
+					<li><a href="{% url 'lista_escuelas' %}"><em class="fa fa-building"></em> Escuelas</a></li>
+					<li><a href="{% url 'lista_vendedores' %}"><em class="fa fa-users"></em> Vendedores</a></li>
+					{% endif %}
+					<li><a href="{% url 'historial_visitas' %}"><em class="fa fa-briefcase"></em> Visitas</a></li>
+					<li><a href="{% url 'lista_ofrecimientos' %}"><em class="fa fa-tasks"></em> Ofrecimientos</a></li>
+				{% else %}
+				{% endif %}
 			</ul>
 		</div>
 		<section id="main-content" class="column column-offset-20">
@@ -70,6 +86,32 @@
     		{% endblock %}
 		</section>
 	</div>
+<script>
+$(document).ready( function () {
+	$('table.display').DataTable( {
+			initComplete: function () {
+					this.api().columns().every( function () {
+							var column = this;
+							var select = $('<select><option value=""></option></select>')
+									.appendTo( $(column.footer()).empty() )
+									.on( 'change', function () {
+											var val = $.fn.dataTable.util.escapeRegex(
+													$(this).val()
+											);
 
+											column
+													.search( val ? '^'+val+'$' : '', true, false )
+													.draw();
+									} );
+
+							column.data().unique().sort().each( function ( d, j ) {
+									select.append( '<option value="'+d+'">'+d+'</option>' )
+							} );
+					} );
+			}
+	} );
+	$('.contenido').fadeIn('slow');
+} );
+</script>
 </body>
 </html>

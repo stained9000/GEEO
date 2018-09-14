@@ -1,139 +1,143 @@
 {% extends 'CATEDRA/base.html' %}
 
 {% block content %}
-<div class="row grid-responsive">
-  <div class="column page-heading">
-    <div class="large-card clearfix">
-      <div class="float-left">
-        <h2>Propuesta No. {{propuesta.pk}} - Escuela {{propuesta.escuela.nombre}}</h2>
-        <em>Creada en {{propuesta.fecha}} - Estado: {{propuesta.estado}}</em>
+<div class="contenido" style="display: none">
+  <div class="row grid-responsive">
+    <div class="column page-heading">
+      <div class="large-card clearfix">
+        <div class="float-left">
+          <h2>Propuesta No. {{propuesta.pk}} - Escuela {{propuesta.escuela.nombre}}</h2>
+          <em>Creada en {{propuesta.fecha}} - Estado: {{propuesta.estado}}</em>
 
+        </div>
+        <a class="button float-right" href="{% url 'propuesta_edit' pk_vendedor=propuesta.vendedor.pk pk_propuesta=propuesta.pk %}"><span class="fa fa-pencil"></span> Editar</a>
       </div>
-      <a class="button float-right" href="{% url 'propuesta_edit' pk_vendedor=propuesta.vendedor.pk pk_propuesta=propuesta.pk %}"><span class="fa fa-pencil"></span> Editar</a>
     </div>
   </div>
+
+  <div class="row grid-responsive">
+    <div class="column">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h2>Detalles</h2>
+        </div> <!-- End card-title -->
+        <div class="card-block">
+          <table>
+            <tbody>
+              <tr>
+                <td>Escuela: {{propuesta.escuela.nombre}}</td>
+                <td>Codigo: {{propuesta.escuela.codigo}}</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Telefono: {{propuesta.escuela.telefono}}</td>
+                <td> Distrito: {{propuesta.escuela.distrito_escolar}}</td>
+                <td>Region Educativa: {{propuesta.escuela.region_educativa}}</td>
+              </tr>
+              <tr>
+                <td>E-mail: {{propuesta.escuela.email}}</td>
+                <td>Director(a): {{personal.nombre_del_director}}</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Direccion: {{propuesta.escuela.direccion_fisica}}</td>
+                <td>Zip Code: {{propuesta.escuela.direccion_zipcode}}</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div> <!-- End card-block -->
+      </div> <!-- End card -->
+    </div> <!--End column -->
+  </div> <!-- End row -->
+
+  <div class="row grid-responsive">
+    <div class="column">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h2 class="float-left">Ofrecimientos</h2>
+          <a class="button float-right" href="{% url 'crear_ofrecimiento' pk_propuesta=propuesta.pk %}"><span class="fa fa-plus"></span> Agregar</a>
+        </div> <!-- End card-title -->
+        <div class="card-block">
+          <table>
+            <thead>
+              <th>Estado</th>
+              <th>Participantes</th>
+              <th>Materia</th>
+              <th>Modalidad/Codigo</th>
+              <th>Estrategia</th>
+              <th>Titulo</th>
+              <th>Horas</th>
+              <th>Costo</th>
+              <th>Total</th>
+              <th>Acciones</th>
+            </thead>
+            <tbody>
+              {% for ofrecimiento in ofrecimientos %}
+              <tr>
+                <td>{{ofrecimiento.estado}}</td>
+                <td>{{ofrecimiento.participantes}}</td>
+                <td>{{ofrecimiento.materia}}</td>
+                <td>{{ofrecimiento.codigode}}</td>
+                <td>{{ofrecimiento.estrategia}}</td>
+                <td>{{ofrecimiento.titulo}}</td>
+                <td>{{ofrecimiento.horas}}</td>
+                <td>${{ofrecimiento.codigode.costo|format_thousands}}</td>
+                {% if ofrecimiento.codigode.codigo == 11829 %}
+                <td>${{ofrecimiento.codigode.costo|multiply:ofrecimiento.participantes|format_thousands}}</td>
+                {% else %}
+                <td>${{ofrecimiento.codigode.costo|format_thousands}}</td>
+                {% endif %}
+                <td><a href="{% url 'borrar_ofrecimiento' pk_propuesta=propuesta.pk pk_ofrecimiento=ofrecimiento.pk%}"><em class="fa fa-trash"></em></a> | <a href="{% url 'ofrecimiento_edit' pk_ofrecimiento=ofrecimiento.pk pk_propuesta=propuesta.pk %}"><em class="fa fa-edit"></em></a></td>
+              </tr>
+              {% endfor %}
+              <tr>
+
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>Total</strong></td>
+                <td><strong>${{costo_total|format_thousands}}</strong></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div> <!-- End card-block -->
+      </div> <!-- End card -->
+    </div> <!--End column -->
+  </div> <!-- End row -->
+
+  <div class="row grid-responsive">
+    <div class="column">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h2>Detalles de Vendedor</h2>
+        </div> <!-- End card-title -->
+        <div class="card-block">
+          <table>
+            <thead>
+              <th>Nombre</th>
+              <th>Telefono</th>
+              <th>Email</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="{% url 'perfil_vendedor' pk=propuesta.vendedor.pk %}">{{propuesta.vendedor.usuario.first_name}} {{propuesta.vendedor.usuario.last_name}}</a></td>
+                <td>{{propuesta.vendedor.telefono}}</td>
+                <td>{{propuesta.vendedor.usuario.email}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div> <!-- End card-block -->
+      </div> <!-- End card -->
+    </div> <!--End column -->
+  </div> <!-- End row -->
+  <a class="button float-right" href="{% url 'propuesta_pdf' pk_propuesta=propuesta.pk %}"><span class="fa fa-print"></span> Documento</a>
 </div>
 
-<div class="row grid-responsive">
-  <div class="column">
-    <div class="card">
-      <div class="card-title clearfix">
-        <h2>Detalles</h2>
-      </div> <!-- End card-title -->
-      <div class="card-block">
-        <table>
-          <tbody>
-            <tr>
-              <td>Escuela: {{propuesta.escuela.nombre}}</td>
-              <td>Codigo: {{propuesta.escuela.codigo}}</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Telefono: {{propuesta.escuela.telefono}}</td>
-              <td> Distrito: {{propuesta.escuela.distrito_escolar}}</td>
-              <td>Region Educativa: {{propuesta.escuela.region_educativa}}</td>
-            </tr>
-            <tr>
-              <td>E-mail: {{propuesta.escuela.email}}</td>
-              <td>Director(a): {{personal.nombre_del_director}}</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>Direccion: {{propuesta.escuela.direccion_fisica}}</td>
-              <td>Zip Code: {{propuesta.escuela.direccion_zipcode}}</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div> <!-- End card-block -->
-    </div> <!-- End card -->
-  </div> <!--End column -->
-</div> <!-- End row -->
-
-<div class="row grid-responsive">
-  <div class="column">
-    <div class="card">
-      <div class="card-title clearfix">
-        <h2 class="float-left">Ofrecimientos</h2>
-        <a class="button float-right" href="{% url 'crear_ofrecimiento' pk_propuesta=propuesta.pk %}"><span class="fa fa-plus"></span> Agregar</a>
-      </div> <!-- End card-title -->
-      <div class="card-block">
-        <table>
-          <thead>
-
-            <th>Participantes</th>
-            <th>Materia</th>
-            <th>Modalidad/Codigo</th>
-            <th>Estrategia</th>
-            <th>Titulo</th>
-            <th>Horas</th>
-            <th>Costo</th>
-            <th>Total</th>
-            <th>Acciones</th>
-          </thead>
-          <tbody>
-            {% for ofrecimiento in ofrecimientos %}
-            <tr>
-
-              <td>{{ofrecimiento.participantes}}</td>
-              <td>{{ofrecimiento.materia}}</td>
-              <td>{{ofrecimiento.codigode}}</td>
-              <td>{{ofrecimiento.estrategia}}</td>
-              <td>{{ofrecimiento.titulo}}</td>
-              <td>{{ofrecimiento.horas}}</td>
-              <td>${{ofrecimiento.codigode.costo|format_thousands}}</td>
-              {% if ofrecimiento.codigode.codigo == 11829 %}
-              <td>${{ofrecimiento.codigode.costo|multiply:ofrecimiento.participantes|format_thousands}}</td>
-              {% else %}
-              <td>${{ofrecimiento.codigode.costo|format_thousands}}</td>
-              {% endif %}
-              <td><a href="{% url 'borrar_ofrecimiento' pk_propuesta=propuesta.pk pk_ofrecimiento=ofrecimiento.pk%}"><em class="fa fa-trash"></em></a> | <a href="#"><em class="fa fa-edit"></em></a></td>
-            </tr>
-            {% endfor %}
-            <tr>
-
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td><strong>Total</strong></td>
-              <td><strong>${{costo_total|format_thousands}}</strong></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div> <!-- End card-block -->
-    </div> <!-- End card -->
-  </div> <!--End column -->
-</div> <!-- End row -->
-
-<div class="row grid-responsive">
-  <div class="column">
-    <div class="card">
-      <div class="card-title clearfix">
-        <h2>Detalles de Vendedor</h2>
-      </div> <!-- End card-title -->
-      <div class="card-block">
-        <table>
-          <thead>
-            <th>Nombre</th>
-            <th>Telefono</th>
-            <th>Email</th>
-          </thead>
-          <tbody>
-            <tr>
-              <td><a href="{% url 'perfil_vendedor' pk=propuesta.vendedor.pk %}">{{propuesta.vendedor.usuario.first_name}} {{propuesta.vendedor.usuario.last_name}}</a></td>
-              <td>{{propuesta.vendedor.telefono}}</td>
-              <td>{{propuesta.vendedor.usuario.email}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div> <!-- End card-block -->
-    </div> <!-- End card -->
-  </div> <!--End column -->
-</div> <!-- End row -->
-<a class="button float-right" href="{% url 'propuesta_pdf' pk_propuesta=propuesta.pk %}"><span class="fa fa-print"></span> Documento</a>
 
 {% endblock %}

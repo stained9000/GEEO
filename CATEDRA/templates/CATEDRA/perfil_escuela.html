@@ -1,333 +1,336 @@
 {% extends 'CATEDRA/base.html' %}
 
 {% block content %}
-<div class="row grid-responsive">
-  <div class="column page-heading">
-    <div class="large-card clearfix">
-      <div class="float-left">
-        <h2>{{escuela.nombre}}</h2>
-        <em>Modificado en: {{escuela.fecha_modificacion}}</em>
-      </div>
+<div class="contenido" style="display: none;">
+  <div class="row grid-responsive">
+    <div class="column page-heading">
+      <div class="large-card clearfix">
+        <div class="float-left">
+          <h2>{{escuela.nombre}}</h2>
+          <em>Modificado en: {{escuela.fecha_modificacion}}</em>
+        </div>
 
+      </div>
     </div>
   </div>
-</div>
 
-<div class="row grid-responsive">
-  <div class="column column-50">
+  <div class="row grid-responsive">
+    <div class="column column-50">
+      <div class="card">
+        <div class="card-title clearfix">
+            <h3 class="float-left">Datos Generales</h3>
+            {% if user.is_authenticated %}
+            <a class="button float-right" href="{% url 'escuela_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
+            {% endif %}
+        </div>
+        <div class="card-block">
+          <table>
+            <tr>
+              <td>Código</td>
+              <td>{{escuela.codigo}}</td>
+            </tr>
+            <tr>
+              <td>Nivel</td>
+              <td>{{escuela.nivel}}</td>
+            </tr>
+            <tr>
+              <td>Tipo</td>
+              <td>{{escuela.tipo}}</td>
+            </tr>
+            <tr>
+              <td>Región Educativa</td>
+              <td>{{escuela.region_educativa}}</td>
+            </tr>
+            <tr>
+              <td>Distrito</td>
+              <td>{{escuela.distrito_escolar}} {{escuela.municipio_escolar}}</td>
+            </tr>
+            <tr>
+              <td>Teléfono</td>
+              <td>{{escuela.telefono}}</td>
+            </tr>
+            <tr>
+              <td>Fax</td>
+              <td>{{escuela.fax}}</td>
+            </tr>
+            <tr>
+              <td>Vendedor Asignado</td>
+              {% if vendedor == 'Esta escuela no tiene vendedor asignado.' %}
+              <td>{{vendedor}}</td>
+              {% else %}
+              <td><a href="{% url 'perfil_vendedor' pk=vendedor.pk %}">{{vendedor.usuario.first_name}} {{vendedor.usuario.last_name}}</a></td>
+              {% endif %}
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="column column-50">
     <div class="card">
       <div class="card-title clearfix">
-          <h3 class="float-left">Datos Generales</h3>
+        <h3 class="float-left">Personal Administrativo</h3>
+        {% if user.is_authenticated %}
+        {% if personal == 'Aún no se ha agregado información de personal administrativo a esta escuela.' %}
+          <a class="button float-right" href="{% url 'crear_personal' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
+        {% else %}
+          <a class="button float-right" href="{% url 'personal_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
+        {% endif %}
+        {% endif %}
+      </div> <!--End class title -->
+      <div class="card-block">
+        {% if personal == 'Aún no se ha agregado información de personal administrativo a esta escuela.' %}
+        <p>{{personal}}</p>
+        {% else %}
+        <table class='table table-striped'>
+          <thead>
+            <th>Posición</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+          </thead>
+          <tr>
+            <td>Director</td>
+            <td>{{personal.nombre_del_director}}</td>
+            <td>{{personal.email_del_director}}</td>
+            <td>{{personal.telefono_del_director}}</td>
+          </tr>
+          <tr>
+            <td>Consejero</td>
+            <td>{{personal.nombre_del_consejero}}</td>
+            <td>{{personal.email_del_consejero}}</td>
+            <td>{{personal.telefono_del_consejero}}</td>
+          </tr>
+          <tr>
+            <td>Trabajador Social</td>
+            <td>{{personal.nombre_del_trabajador_social}}</td>
+            <td>{{personal.email_del_trabajador_social}}</td>
+            <td>{{personal.telefono_del_trabajador_social}}</td>
+          </tr>
+          <tr>
+            <td>Requisante</td>
+            <td>{{personal.nombre_del_requisante}}</td>
+            <td>{{personal.email_del_requisante}}</td>
+            <td>{{personal.telefono_del_requisante}}</td>
+          </tr>
+          <tr>
+            <td>Presidente del Consejo Escolar</td>
+            <td>{{personal.nombre_del_presidente_del_consejo_escolar}}</td>
+            <td></td>
+            <td>{{personal.telefono_del_presidente_del_consejo_escolar}}</td>
+          </tr>
+        </table>
+        {% endif %}
+      </div> <!-- End card-block -->
+    </div> <!-- End card -->
+  </div> <!--End column -->
+
+  </div> <!-- End row -->
+  <div class="row grid-responsive">
+    <div class="column column-50">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h3 class="float-left">Matrícula de la Escuela</h3>
           {% if user.is_authenticated %}
-          <a class="button float-right" href="{% url 'escuela_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
+          {% if matricula == 'Aún no se ha agregado información de matrícula a esta escuela.' %}
+            <a class="button float-right" href="{% url 'crear_matricula' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
+          {% else %}
+            <a class="button float-right" href="{% url 'matricula_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
           {% endif %}
-      </div>
+          {% endif %}
+        </div> <!-- End card-title -->
+        <div class="card-block">
+      {% if matricula == 'Aún no se ha agregado información de matrícula a esta escuela.' %}
+      <p>{{matricula}}</p>
+      {% else %}
+      <table class="table table-striped">
+        <tr>
+          <td>Matrícula de estudiantes</td>
+          <td>{{matricula.matricula_de_estudiantes}}</td>
+        </tr>
+      </table>
+      <table class="table table-striped">
+        <tr>
+          <td>Maestros de Español</td>
+          <td>{{matricula.maestros_de_espanol}}</td>
+        </tr>
+        <tr>
+          <td>Maestros de Matemáticas</td>
+          <td>{{matricula.maestros_de_matematicas}}</td>
+        </tr>
+        <tr>
+          <td>Maestros de Inglés</td>
+          <td>{{matricula.maestros_de_ingles}}</td>
+        </tr>
+        <tr>
+          <td>Maestros de Ciencias</td>
+          <td>{{matricula.maestros_de_ciencias}}</td>
+        </tr>
+        <tr>
+          <td>Otros Maestros</td>
+          <td>{{matricula.maestros_otros}}</td>
+        </tr>
+        <tr>
+          <td>Total de Maestros</td>
+          <td>{{total_maestros}}</td>
+        </tr>
+      </table>
+      {% endif %}
+        </div> <!-- End card-block -->
+      </div> <!-- End card -->
+    </div> <!-- End column -->
+  <div class="column column-50">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h3 class="float-left">Dominio de Destrezas</h3>
+          {% if user.is_authenticated %}
+          {% if destrezas == 'Aún no se ha agregado información de destrezas a esta escuela.' %}
+            <a class="button float-right" href="{% url 'crear_destrezas' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
+          {% else %}
+            <a class="button float-right" href="{% url 'destrezas_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
+          {% endif %}
+          {% endif %}
+        </div> <!-- End card-title -->
+        <div class="card-block">
+      {% if destrezas == 'Aún no se ha agregado información de destrezas a esta escuela.' %}
+      <p>{{destrezas}}</p>
+      {% else %}
+      <table>
+        <tr>
+          <td>Español Pre-basico</td>
+          <td>{{destrezas.espanol_prebasico|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Español Basico</td>
+          <td>{{destrezas.espanol_basico|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Español Proficiente</td>
+          <td>{{destrezas.espanol_proficiente|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Español Avanzado</td>
+          <td>{{destrezas.espanol_avanzado|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Matemáticas Pre-basico</td>
+          <td>{{destrezas.matematicas_prebasico|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Matemáticas Basico</td>
+          <td>{{destrezas.matematicas_basico|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Matemáticas Proficiente</td>
+          <td>{{destrezas.matematicas_proficiente|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Matemáticas Avanzado</td>
+          <td>{{destrezas.matematicas_avanzado|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Inglés Pre-basico</td>
+          <td>{{destrezas.ingles_prebasico|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Inglés Basico</td>
+          <td>{{destrezas.ingles_basico|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Inglés Proficiente</td>
+          <td>{{destrezas.ingles_proficiente|format_percent}}%</td>
+        </tr>
+        <tr>
+          <td>Inglés Avanzado</td>
+          <td>{{destrezas.ingles_avanzado|format_percent}}%</td>
+        </tr>
+      </table>
+      {% endif %}
+        </div> <!-- End card-block -->
+      </div> <!-- End card -->
+    </div> <!-- End column -->
+  </div> <!-- End Row -->
+  <!--
+  <div class="row grid-responsive">
+    <div class="column">
+      <div class="card">
+        <div class="card-title clear-fix">
+        <h3>Preferencia de Horarios</h3>
+      </div>  End card-title
       <div class="card-block">
         <table>
           <tr>
-            <td>Código</td>
-            <td>{{escuela.codigo}}</td>
+            <td colspan="2"><strong>Horario preferido para talleres de padres</strong></td>
           </tr>
           <tr>
-            <td>Nivel</td>
-            <td>{{escuela.nivel}}</td>
+            <td>Días</td>
+            <td>{{escuela.dia_pref_taller_padres}}</td>
           </tr>
           <tr>
-            <td>Tipo</td>
-            <td>{{escuela.tipo}}</td>
+            <td>Horario</td>
+            <td>{{escuela.horario_pref_taller_padres}}</td>
           </tr>
           <tr>
-            <td>Región Educativa</td>
-            <td>{{escuela.region_educativa}}</td>
+            <td colspan="2"><strong>Horario preferido para talleres a maestros</strong></td>
           </tr>
           <tr>
-            <td>Distrito</td>
-            <td>{{escuela.distrito_escolar}} {{escuela.municipio_escolar}}</td>
+            <td>Días</td>
+            <td>{{escuela.dia_pref_taller_maestros}}</td>
           </tr>
           <tr>
-            <td>Teléfono</td>
-            <td>{{escuela.telefono}}</td>
-          </tr>
-          <tr>
-            <td>Fax</td>
-            <td>{{escuela.fax}}</td>
-          </tr>
-          <tr>
-            <td>Vendedor Asignado</td>
-            {% if vendedor == 'Esta escuela no tiene vendedor asignado.' %}
-            <td>{{vendedor}}</td>
-            {% else %}
-            <td><a href="{% url 'perfil_vendedor' pk=vendedor.pk %}">{{vendedor.usuario.first_name}} {{vendedor.usuario.last_name}}</a></td>
-            {% endif %}
+            <td>Horario</td>
+            <td>{{escuela.horario_pref_taller_maestros}}</td>
           </tr>
         </table>
-      </div>
-    </div>
-  </div>
-  <div class="column column-50">
-  <div class="card">
-    <div class="card-title clearfix">
-      <h3 class="float-left">Personal Administrativo</h3>
-      {% if user.is_authenticated %}
-      {% if personal == 'Aún no se ha agregado información de personal administrativo a esta escuela.' %}
-        <a class="button float-right" href="{% url 'crear_personal' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
-      {% else %}
-        <a class="button float-right" href="{% url 'personal_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
-      {% endif %}
-      {% endif %}
-    </div> <!--End class title -->
-    <div class="card-block">
-      {% if personal == 'Aún no se ha agregado información de personal administrativo a esta escuela.' %}
-      <p>{{personal}}</p>
-      {% else %}
-      <table class='table table-striped'>
-        <thead>
-          <th>Posición</th>
-          <th>Nombre</th>
-          <th>Email</th>
-          <th>Teléfono</th>
-        </thead>
-        <tr>
-          <td>Director</td>
-          <td>{{personal.nombre_del_director}}</td>
-          <td>{{personal.email_del_director}}</td>
-          <td>{{personal.telefono_del_director}}</td>
-        </tr>
-        <tr>
-          <td>Consejero</td>
-          <td>{{personal.nombre_del_consejero}}</td>
-          <td>{{personal.email_del_consejero}}</td>
-          <td>{{personal.telefono_del_consejero}}</td>
-        </tr>
-        <tr>
-          <td>Trabajador Social</td>
-          <td>{{personal.nombre_del_trabajador_social}}</td>
-          <td>{{personal.email_del_trabajador_social}}</td>
-          <td>{{personal.telefono_del_trabajador_social}}</td>
-        </tr>
-        <tr>
-          <td>Requisante</td>
-          <td>{{personal.nombre_del_requisante}}</td>
-          <td>{{personal.email_del_requisante}}</td>
-          <td>{{personal.telefono_del_requisante}}</td>
-        </tr>
-        <tr>
-          <td>Presidente del Consejo Escolar</td>
-          <td>{{personal.nombre_del_presidente_del_consejo_escolar}}</td>
-          <td></td>
-          <td>{{personal.telefono_del_presidente_del_consejo_escolar}}</td>
-        </tr>
-      </table>
-      {% endif %}
-    </div> <!-- End card-block -->
-  </div> <!-- End card -->
-</div> <!--End column -->
+      </div> End card-block
+      </div> End card
+    </div> End column
+  </div> End row
+  -->
+  <div class="row grid-responsive">
+    <div class="column">
+      <div class="card">
+        <div class="card-title clearfix">
+        <h3 class="float-left">Historial de Visitas</h3>
+        {% if user.is_authenticated %}
+        <a class="button float-right" href="{% url 'crear_visita' pk_vendedor=user.empleado.pk %}"><span class="fa fa-pencil"></span> Crear</a>
+        {% endif %}
+      </div> <!-- End card-title -->
+      <div class="card-block">
+        {% if visitas == 'Aun no se ha visitado esta escuela.' %}
+          <p>{{visitas}}</p>
+        {% else %}
+        <table>
+          <thead>
+            <th>Fecha</th>
+            <th>Escuela</th>
+            <th>Anotaciones</th>
+            <th>Acciones</th>
+          </thead>
+          <tbody>
+            {% for visita in visitas %}
+            <tr>
+              <td>{{visita.fecha}}</td>
+              <td>{{visita.escuela.nombre}}</td>
+              <td>{{visita.anotaciones}}</td>
+              {%if vendedor == 'Esta escuela no tiene vendedor asignado.' %}
+              <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="#"><em class="fa fa-edit"></em></a></td>
+              {% else %}
+              <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="{% url 'visita_edit' pk_vendedor=vendedor.pk pk_visita=visita.pk %}"><em class="fa fa-edit"></em></a></td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </div> <!-- End card-block -->
 
-</div> <!-- End row -->
-<div class="row grid-responsive">
-  <div class="column column-50">
-    <div class="card">
-      <div class="card-title clearfix">
-        <h3 class="float-left">Matrícula de la Escuela</h3>
-        {% if user.is_authenticated %}
-        {% if matricula == 'Aún no se ha agregado información de matrícula a esta escuela.' %}
-          <a class="button float-right" href="{% url 'crear_matricula' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
-        {% else %}
-          <a class="button float-right" href="{% url 'matricula_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
-        {% endif %}
-        {% endif %}
-      </div> <!-- End card-title -->
-      <div class="card-block">
-    {% if matricula == 'Aún no se ha agregado información de matrícula a esta escuela.' %}
-    <p>{{matricula}}</p>
-    {% else %}
-    <table class="table table-striped">
-      <tr>
-        <td>Matrícula de estudiantes</td>
-        <td>{{matricula.matricula_de_estudiantes}}</td>
-      </tr>
-    </table>
-    <table class="table table-striped">
-      <tr>
-        <td>Maestros de Español</td>
-        <td>{{matricula.maestros_de_espanol}}</td>
-      </tr>
-      <tr>
-        <td>Maestros de Matemáticas</td>
-        <td>{{matricula.maestros_de_matematicas}}</td>
-      </tr>
-      <tr>
-        <td>Maestros de Inglés</td>
-        <td>{{matricula.maestros_de_ingles}}</td>
-      </tr>
-      <tr>
-        <td>Maestros de Ciencias</td>
-        <td>{{matricula.maestros_de_ciencias}}</td>
-      </tr>
-      <tr>
-        <td>Otros Maestros</td>
-        <td>{{matricula.maestros_otros}}</td>
-      </tr>
-      <tr>
-        <td>Total de Maestros</td>
-        <td>{{total_maestros}}</td>
-      </tr>
-    </table>
-    {% endif %}
-      </div> <!-- End card-block -->
-    </div> <!-- End card -->
-  </div> <!-- End column -->
-<div class="column column-50">
-    <div class="card">
-      <div class="card-title clearfix">
-        <h3 class="float-left">Dominio de Destrezas</h3>
-        {% if user.is_authenticated %}
-        {% if destrezas == 'Aún no se ha agregado información de destrezas a esta escuela.' %}
-          <a class="button float-right" href="{% url 'crear_destrezas' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
-        {% else %}
-          <a class="button float-right" href="{% url 'destrezas_edit' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Editar</a>
-        {% endif %}
-        {% endif %}
-      </div> <!-- End card-title -->
-      <div class="card-block">
-    {% if destrezas == 'Aún no se ha agregado información de destrezas a esta escuela.' %}
-    <p>{{destrezas}}</p>
-    {% else %}
-    <table>
-      <tr>
-        <td>Español Pre-basico</td>
-        <td>{{destrezas.espanol_prebasico|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Español Basico</td>
-        <td>{{destrezas.espanol_basico|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Español Proficiente</td>
-        <td>{{destrezas.espanol_proficiente|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Español Avanzado</td>
-        <td>{{destrezas.espanol_avanzado|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Matemáticas Pre-basico</td>
-        <td>{{destrezas.matematicas_prebasico|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Matemáticas Basico</td>
-        <td>{{destrezas.matematicas_basico|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Matemáticas Proficiente</td>
-        <td>{{destrezas.matematicas_proficiente|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Matemáticas Avanzado</td>
-        <td>{{destrezas.matematicas_avanzado|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Inglés Pre-basico</td>
-        <td>{{destrezas.ingles_prebasico|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Inglés Basico</td>
-        <td>{{destrezas.ingles_basico|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Inglés Proficiente</td>
-        <td>{{destrezas.ingles_proficiente|format_percent}}%</td>
-      </tr>
-      <tr>
-        <td>Inglés Avanzado</td>
-        <td>{{destrezas.ingles_avanzado|format_percent}}%</td>
-      </tr>
-    </table>
-    {% endif %}
-      </div> <!-- End card-block -->
-    </div> <!-- End card -->
-  </div> <!-- End column -->
-</div> <!-- End Row -->
-<!--
-<div class="row grid-responsive">
-  <div class="column">
-    <div class="card">
-      <div class="card-title clear-fix">
-      <h3>Preferencia de Horarios</h3>
-    </div>  End card-title
-    <div class="card-block">
-      <table>
-        <tr>
-          <td colspan="2"><strong>Horario preferido para talleres de padres</strong></td>
-        </tr>
-        <tr>
-          <td>Días</td>
-          <td>{{escuela.dia_pref_taller_padres}}</td>
-        </tr>
-        <tr>
-          <td>Horario</td>
-          <td>{{escuela.horario_pref_taller_padres}}</td>
-        </tr>
-        <tr>
-          <td colspan="2"><strong>Horario preferido para talleres a maestros</strong></td>
-        </tr>
-        <tr>
-          <td>Días</td>
-          <td>{{escuela.dia_pref_taller_maestros}}</td>
-        </tr>
-        <tr>
-          <td>Horario</td>
-          <td>{{escuela.horario_pref_taller_maestros}}</td>
-        </tr>
-      </table>
-    </div> End card-block
-    </div> End card
-  </div> End column
-</div> End row
--->
-<div class="row grid-responsive">
-  <div class="column">
-    <div class="card">
-      <div class="card-title clearfix">
-      <h3 class="float-left">Historial de Visitas</h3>
-      {% if user.is_authenticated %}
-      <a class="button float-right" href="{% url 'crear_actividad' codigo=escuela.codigo %}"><span class="fa fa-pencil"></span> Crear</a>
-      {% endif %}
-    </div> <!-- End card-title -->
-    <div class="card-block">
-      {% if visitas == 'Aún no se ha visitado a esta escuela.' %}
-        <p>{{visitas}}</p>
-      {% else %}
-      <table>
-        <thead>
-          <th>Fecha</th>
-          <th>Escuela</th>
-          <th>Anotaciones</th>
-          <th>Acciones</th>
-        </thead>
-        <tbody>
-          {% for visita in visitas %}
-          <tr>
-            <td>{{visita.fecha}}</td>
-            <td>{{visita.escuela.nombre}}</td>
-            <td>{{visita.anotaciones}}</td>
-            {%if vendedor == 'Esta escuela no tiene vendedor asignado.' %}
-            <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="#"><em class="fa fa-edit"></em></a></td>
-            {% else %}
-            <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="{% url 'visita_edit' pk_vendedor=vendedor.pk pk_visita=visita.pk %}"><em class="fa fa-edit"></em></a></td>
-            {% endif %}
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% endif %}
-    </div> <!-- End card-block -->
+        </div>
 
       </div>
 
     </div>
 
   </div>
-
 </div>
+
 {% endblock %}

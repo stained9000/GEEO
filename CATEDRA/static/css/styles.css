@@ -100,6 +100,10 @@ a.anchor {
   font-weight: bold;
   text-transform: uppercase; }
 
+.loading {
+  display: none;
+}
+
 /*Margins*/
 .m-0 {
   margin: 0; }
@@ -142,7 +146,9 @@ a.anchor {
 
 /*Forms Elements & Buttons*/
 input[type='email'], input[type='number'], input[type='password'], input[type='search'], input[type='tel'], input[type='text'], input[type='url'], textarea, select {
-  border: 1px solid #f9f9f9 !important; }
+  border: 1px solid #f9f9f9 !important;
+  padding: 0;
+ }
 
 input[type='email']:focus, input[type='number']:focus, input[type='password']:focus, input[type='search']:focus, input[type='tel']:focus, input[type='text']:focus, input[type='url']:focus, textarea:focus, select:focus {
   border: 1px solid #f02563 !important; }
@@ -207,7 +213,8 @@ input[type='email']:focus, input[type='number']:focus, input[type='password']:fo
 
 select {
   background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="14" viewBox="0 0 29 14" width="29"><path fill="#eeeeee" d="M9.37727 3.625l5.08154 6.93523L19.54036 3.625"/></svg>') center right no-repeat;
-  padding-right: 3.0rem; }
+  /* padding-right: 3.0rem; */
+}
 
 select:focus {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="14" viewBox="0 0 29 14" width="29"><path fill="#f02563" d="M9.37727 3.625l5.08154 6.93523L19.54036 3.625"/></svg>'); }
@@ -285,6 +292,9 @@ select:focus {
   #main-content .page-heading {
     margin-bottom: 20px; }
 
+#visitadas, #sin-visita {
+  height: 690px;
+}
 .card {
   background: #fff;
   box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.05);
@@ -533,3 +543,24 @@ select:focus {
     margin-right: 20px; }
     .user-section .username {
       display: none; } }
+
+.w3-light-grey {
+    color:#000!important;background-color:#f1f1f1!important;
+}
+
+.w3-round-large {
+    border-radius:8px;
+}
+
+.w3-round-xlarge {
+    border-radius:16px;
+}
+
+.w3-container,.w3-panel {
+  padding:0.01em 16px;
+}
+
+.w3-blue,.w3-hover-blue:hover {
+  color:#fff!important;
+  background-color:#f02563!important;
+}

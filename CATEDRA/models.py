@@ -448,6 +448,13 @@ class CodigosDE(models.Model):
         return str(self.codigo) + " " + self.modalidad
 
 class Ofrecimiento(models.Model):
+    estado_choices = (
+    ('EN EVALUACION', 'EN EVALUACION'),
+    ('APROBADA', 'APROBADA'),
+    ('RECHAZADA', 'RECHAZADA'),
+    )
+
+    estado = models.CharField(max_length=200, choices=estado_choices, default='EN EVALUACION')
     propuesta = models.ForeignKey(Propuesta, on_delete=models.CASCADE, null=True, blank=True)
     codigode = models.ForeignKey(CodigosDE, on_delete=models.CASCADE)
     materia = models.CharField(max_length=200)

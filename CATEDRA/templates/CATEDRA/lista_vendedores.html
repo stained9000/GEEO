@@ -1,61 +1,63 @@
 {% extends 'CATEDRA/base.html' %}
 
 {% block content %}
-
-<div class="row grid-responsive">
-  <div class="column ">
-    <div class="card">
-      <div class="card-title clearfix">
-        <h3 class="float-left">Listado de Vendedores</h3>
+<div class="contenido" style="display: none;">
+  <div class="row grid-responsive">
+    <div class="column ">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h3 class="float-left">Listado de Vendedores</h3>
+        </div>
+        <div class="card-block">
+          <table>
+            <thead>
+              <th>Nombre</th>
+              <th>Apellidos</th>
+              <th>E-mail</th>
+              <th>Acciones</th>
+            </thead>
+            <tbody>
+              {% for vendedor in vendedores %}
+                <tr>
+                  <td>{{vendedor.usuario.first_name}}</a></td>
+                  <td>{{vendedor.usuario.last_name}}</td>
+                  <td>{{vendedor.usuario.email}}</td>
+                  <td><a class="button button-outline" href="{% url 'perfil_vendedor' pk=vendedor.pk %}">Ver</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="card-block">
-        <table>
-          <thead>
-            <th>Nombre</th>
-            <th>Apellidos</th>
-            <th>E-mail</th>
-            <th>Acciones</th>
-          </thead>
-          <tbody>
-            {% for vendedor in vendedores %}
-              <tr>
-                <td>{{vendedor.usuario.first_name}}</a></td>
-                <td>{{vendedor.usuario.last_name}}</td>
-                <td>{{vendedor.usuario.email}}</td>
-                <td><a class="button button-outline" href="{% url 'perfil_vendedor' pk=vendedor.pk %}">Ver</a></td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    {% if vendedores.has_other_pages %}
-    <table>
-      <td>
-        {% if vendedores.has_previous %}
-          <a class="page-link" href="?page={{ escuelas.previous_page_number }}">&laquo;</a>
-        {% else %}
-            <span>&laquo;</span>
-        {% endif %}
-      </td>
-      {% for i in vendedores.paginator.page_range %}
-      <td>
-          {% if vendedores.number == i %}
-              <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+      {% if vendedores.has_other_pages %}
+      <table>
+        <td>
+          {% if vendedores.has_previous %}
+            <a class="page-link" href="?page={{ escuelas.previous_page_number }}">&laquo;</a>
           {% else %}
-              <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+              <span>&laquo;</span>
           {% endif %}
-      </td>
-      {% endfor %}
-      <td>
-        {% if vendedores.has_next %}
-            <a class="page-link" href="?page={{ escuelas.next_page_number }}">&raquo;</a>
-        {% else %}
-            <span>&raquo;</span>
-        {% endif %}
-      </td>
-    </table>
-    {% endif %}
+        </td>
+        {% for i in vendedores.paginator.page_range %}
+        <td>
+            {% if vendedores.number == i %}
+                <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+            {% else %}
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            {% endif %}
+        </td>
+        {% endfor %}
+        <td>
+          {% if vendedores.has_next %}
+              <a class="page-link" href="?page={{ escuelas.next_page_number }}">&raquo;</a>
+          {% else %}
+              <span>&raquo;</span>
+          {% endif %}
+        </td>
+      </table>
+      {% endif %}
+    </div>
   </div>
 </div>
+
 {% endblock %}

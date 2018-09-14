@@ -1,0 +1,65 @@
+{% extends 'CATEDRA/base.html' %}
+
+{% block content %}
+<div class="contenido" style="display: none;">
+  <div class="row grid-responsive">
+    <div class="column ">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h3 class="float-left">Historial de propuestas de <a href="{% url 'perfil_vendedor' pk=vendedor.pk %}">{{vendedor.usuario.first_name}} {{vendedor.usuario.last_name}}</a></h3>
+          <a class="button float-right" href="{% url 'crear_propuesta' pk_vendedor=vendedor.pk %}"> Crear Propuesta</a>
+        </div>
+        <div class="card-block">
+          <table id="" class="display">
+            <thead>
+              <th>Numero</th>
+              <th>Fecha</th>
+              <th>Escuela</th>
+              <th>Estado</th>
+            </thead>
+            <tbody>
+              {% for propuesta in propuestas %}
+              <tr>
+                <td><a href="{% url 'propuesta_detalle' pk_propuesta=propuesta.pk %}">{{propuesta.pk}}</a></td>
+                <td>{{propuesta.fecha}}</td>
+                <td>{{propuesta.escuela.nombre}}</td>
+                <td>{{propuesta.estado}}</td>
+
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% if propuestas.has_other_pages %}
+      <table>
+        <td>
+          {% if propuestas.has_previous %}
+            <a class="page-link" href="?page={{ propuestas.previous_page_number }}">&laquo;</a>
+          {% else %}
+              <span>&laquo;</span>
+          {% endif %}
+        </td>
+        {% for i in propuestas.paginator.page_range %}
+        <td>
+            {% if propuestas.number == i %}
+                <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+            {% else %}
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            {% endif %}
+        </td>
+        {% endfor %}
+        <td>
+          {% if propuestas.has_next %}
+              <a class="page-link" href="?page={{ propuestas.next_page_number }}">&raquo;</a>
+          {% else %}
+              <span>&raquo;</span>
+          {% endif %}
+        </td>
+      </table>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,61 +1,73 @@
 {% extends 'CATEDRA/base.html' %}
 
 {% block content %}
-
-<div class="row grid-responsive">
-  <div class="column ">
-    <div class="card">
-      <div class="card-title clearfix">
-        <h3 class="float-left">Historial de visitas de <a href="{% url 'perfil_vendedor' pk=vendedor.pk %}">{{vendedor.usuario.first_name}} {{vendedor.usuario.last_name}}</a></h3>
-      </div>
-      <div class="card-block">
-        <table>
-          <thead>
-            <th>Fecha</th>
-            <th>Escuela</th>
-            <th>Anotaciones</th>
-            <th>Acciones</th>
-          </thead>
-          <tbody>
-            {% for visita in visitas %}
-            <tr>
-              <td>{{visita.fecha}}</td>
-              <td>{{visita.escuela.nombre}}</td>
-              <td>{{visita.anotaciones}}</td>
-              <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="{% url 'visita_edit' pk_vendedor=vendedor.pk pk_visita=visita.pk %}"><em class="fa fa-edit"></em></a></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    {% if escuelas.has_other_pages %}
-    <table>
-      <td>
-        {% if escuelas.has_previous %}
-          <a class="page-link" href="?page={{ escuelas.previous_page_number }}">&laquo;</a>
-        {% else %}
-            <span>&laquo;</span>
-        {% endif %}
-      </td>
-      {% for i in escuelas.paginator.page_range %}
-      <td>
-          {% if escuelas.number == i %}
-              <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+<div class="contenido" style="display: none;">
+  <div class="row grid-responsive">
+    <div class="column ">
+      <div class="card">
+        <div class="card-title clearfix">
+          {% if user.empleado.rol == 'Vendedor' %}
+          <h3 class="float-left">Historial de visitas de <a href="{% url 'perfil_vendedor' pk=vendedor.pk %}">{{vendedor.usuario.first_name}} {{vendedor.usuario.last_name}}</a></h3>
           {% else %}
-              <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+          <h3 class="float-left">Historial de visitas</h3>
           {% endif %}
-      </td>
-      {% endfor %}
-      <td>
-        {% if escuelas.has_next %}
-            <a class="page-link" href="?page={{ escuelas.next_page_number }}">&raquo;</a>
-        {% else %}
-            <span>&raquo;</span>
-        {% endif %}
-      </td>
-    </table>
-    {% endif %}
+        </div>
+        <div class="card-block">
+          <table id="" class="display">
+            <thead>
+              {% if user.empleado.rol == 'Adminsitrativo' %}
+              <th>Vendedor</th>
+              {% endif %}
+              <th>Fecha</th>
+              <th>Escuela</th>
+              <th>Anotaciones</th>
+              <th>Acciones</th>
+            </thead>
+            <tbody>
+              {% for visita in visitas %}
+              <tr>
+                {% if user.empleado.rol == 'Adminsitrativo' %}
+                <th>{{visita.usuario.first_name}} {{visita.usuario.last_name}}</th>
+                {% endif %}
+                <td>{{visita.fecha}}</td>
+                <td>{{visita.escuela.nombre}}</td>
+                <td>{{visita.anotaciones}}</td>
+                <td><a href="{{visita.hoja_de_visita.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="{% url 'visita_edit' pk_vendedor=visita.usuario.empleado.pk pk_visita=visita.pk %}?next={{ request.path|urlencode }}"><em class="fa fa-edit"></em></a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% if escuelas.has_other_pages %}
+      <table>
+        <td>
+          {% if escuelas.has_previous %}
+            <a class="page-link" href="?page={{ escuelas.previous_page_number }}">&laquo;</a>
+          {% else %}
+              <span>&laquo;</span>
+          {% endif %}
+        </td>
+        {% for i in escuelas.paginator.page_range %}
+        <td>
+            {% if escuelas.number == i %}
+                <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+            {% else %}
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            {% endif %}
+        </td>
+        {% endfor %}
+        <td>
+          {% if escuelas.has_next %}
+              <a class="page-link" href="?page={{ escuelas.next_page_number }}">&raquo;</a>
+          {% else %}
+              <span>&raquo;</span>
+          {% endif %}
+        </td>
+      </table>
+      {% endif %}
+    </div>
   </div>
 </div>
+
 {% endblock %}

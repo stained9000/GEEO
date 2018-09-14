@@ -1,68 +1,52 @@
 {% extends 'CATEDRA/base.html' %}
 
 {% block content %}
-
-<div class="row grid-responsive">
-  <div class="column ">
-    <div class="card">
-      <div class="card-title clearfix">
-        <h3 class="float-left">Perfiles de Escuelas Registradas ({{total_escuelas|format_thousands}})</h3>
-        {% if user.is_authenticated %}
-        <a class="button float-right" href="{% url 'crear_escuela' %}">Nueva Escuela</a>
-        {% endif %}
-      </div>
-      <div class="card-block">
-        <table>
-          <thead>
-            <th>Codigo</th>
-            <th>Nombre</th>
-            <th>Nivel</th>
-            <th>Region</th>
-            <th>Fecha de Creacion</th>
-            <th>Acciones</th>
-          </thead>
-          <tbody>
-            {% for escuela in escuelas %}
+<div class="contenido" style="display: none;">
+  <div class="row grid-responsive">
+    <div class="column ">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h3 class="float-left">Perfiles de Escuelas Registradas ({{total_escuelas|format_thousands}})</h3>
+          {% if user.is_authenticated %}
+          <a class="button float-right" href="{% url 'crear_escuela' %}">Nueva Escuela</a>
+          {% endif %}
+        </div>
+        <div class="card-block">
+          <table id="" class="display">
+            <thead>
               <tr>
-                <td>{{escuela.codigo}}</a></td>
-                <td>{{escuela.nombre}}</td>
-                <td>{{escuela.nivel}}</td>
-                <td>{{escuela.region_educativa}}</td>
-                <td>{{escuela.fecha_creacion}}</td>
-                <td><a class="button button-outline" href="{% url 'perfil_escuela' codigo=escuela.codigo %}">Ver</a></td>
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th>Nivel</th>
+                <th>Region</th>
+                <th>Municipio</th>
               </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {% for escuela in escuelas %}
+                <tr>
+                  <td><a href="{% url 'perfil_escuela' codigo=escuela.codigo %}">{{ escuela.codigo }}</a></td>
+                  <td>{{escuela.nombre|string_truncate}}</td>
+                  <td>{{escuela.nivel|format_mayus}}</td>
+                  <td>{{escuela.region_educativa}}</td>
+                  <td>{{escuela.municipio_escolar}}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th>Nivel</th>
+                <th>Region</th>
+                <th>Municipio</th>
+              </tr>
+          </tfoot>
+          </table>
+        </div>
       </div>
     </div>
-    {% if escuelas.has_other_pages %}
-    <table>
-      <td>
-        {% if escuelas.has_previous %}
-          <a class="page-link" href="?page={{ escuelas.previous_page_number }}">&laquo;</a>
-        {% else %}
-            <span>&laquo;</span>
-        {% endif %}
-      </td>
-      {% for i in escuelas.paginator.page_range %}
-      <td>
-          {% if escuelas.number == i %}
-              <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
-          {% else %}
-              <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-          {% endif %}
-      </td>
-      {% endfor %}
-      <td>
-        {% if escuelas.has_next %}
-            <a class="page-link" href="?page={{ escuelas.next_page_number }}">&raquo;</a>
-        {% else %}
-            <span>&raquo;</span>
-        {% endif %}
-      </td>
-    </table>
-    {% endif %}
   </div>
 </div>
+
 {% endblock %}
