@@ -19,10 +19,11 @@
               <tr>
                 <th>Codigo Ofrecimiento</th>
                 <th>Codigo Propuesta</th>
+                <th>Escuela</th>
                 <th>Modalidad/Codigo</th>
                 <th>Titulo</th>
                 <th>Ingreso Total</th>
-                <th>Fecha</th>
+                <th>Mes/Año</th>
                 <th>Estado</th>
               </tr>
             </thead>
@@ -31,6 +32,7 @@
                 <tr>
                   <td><a href="#">{{ofrecimiento.pk}}</a></td>
                   <td><a href="{% url 'propuesta_detalle' pk_propuesta=ofrecimiento.propuesta.pk %}">{{ofrecimiento.propuesta.pk}}</a></td>
+                  <td>{{ofrecimiento.propuesta.escuela.nombre}}</td>
                   <td>{{ofrecimiento.codigode}}</td>
                   <td>{{ofrecimiento.titulo}}</td>
                   {% if ofrecimiento.codigode.codigo == 11829 %}
@@ -38,7 +40,7 @@
                   {% else %}
                   <td>${{ofrecimiento.codigode.costo|format_thousands}}</td>
                   {% endif %}
-                  <td>{{ofrecimiento.propuesta.fecha}}</td>
+                  <td>{{ofrecimiento.propuesta.fecha.month|format_month}} {{ofrecimiento.propuesta.fecha.year}}</td>
                   <td>{{ofrecimiento.estado}}</td>
                 </tr>
               {% endfor %}
@@ -47,6 +49,7 @@
               <tr>
                 <th>Codigo Ofrecimiento</th>
                 <th>Codigo Propuesta</th>
+                <th>Escuela</th>
                 <th>Modalidad/Codigo</th>
                 <th>Titulo</th>
                 <th>Ingreso Total</th>

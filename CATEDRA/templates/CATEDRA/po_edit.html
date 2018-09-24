@@ -1,12 +1,12 @@
 {% extends 'CATEDRA/base.html' %}
-{% load static %}
+
 {% block content %}
 <div class="contenido" style="display: none;">
   <div class="row grid-responsive">
     <div class="column page-heading">
       <div class="card">
         <div class="card-title">
-          <h3>Información de visita</h3>
+          <h3>Información de PO</h3>
         </div> <!-- End card-title -->
         <div class="card-block">
           <form enctype="multipart/form-data" method="POST" class="post-form">{% csrf_token %}
@@ -19,4 +19,6 @@
     </div> <!-- End column -->
   </div> <!-- End row -->
 </div>
+
+
 {% endblock %}

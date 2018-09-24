@@ -1,4 +1,5 @@
 from django.urls import path
+from django.conf.urls import include, url
 from . import views
 
 
@@ -31,4 +32,5 @@ urlpatterns = [
     path('propuesta/<int:pk_propuesta>/ofrecimiento/<int:pk_ofrecimiento>/edit', views.ofrecimiento_edit, name='ofrecimiento_edit'),
     path('propuesta/<int:pk_propuesta>/pdf/', views.propuesta_pdf, name='propuesta_pdf'),
     path('ofrecimientos', views.lista_ofrecimientos, name='lista_ofrecimientos'),
+    path('propuesta/<int:pk_propuesta>/po/crear/', views.crear_po, name='crear_po')
 ]

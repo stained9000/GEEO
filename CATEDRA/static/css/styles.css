@@ -564,3 +564,7 @@ select:focus {
   color:#fff!important;
   background-color:#f02563!important;
 }
+
+#id_ofrecimiento {
+  height: 150px;
+}

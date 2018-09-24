@@ -1,11 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Empleado, Municipio, Propuesta, Ofrecimiento, CodigosDE
-from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezaForm, ActividadForm, VisitaForm, PresupuestoForm, PropuestaForm, OfrecimientoForm
+from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Empleado, Municipio, Propuesta, Ofrecimiento, CodigosDE, PurchaseOrder
+from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezaForm, ActividadForm, VisitaForm, PresupuestoForm, PropuestaForm, OfrecimientoForm, PurchaseOrderForm
 from django.utils import timezone
 from sodapy import Socrata
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required, user_passes_test
 from datetime import datetime
+
 
 
 from io import BytesIO
@@ -23,6 +24,9 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
 
 # Create your views here.
+
+
+
 def rol_check(user):
     try:
         return user.empleado.rol == 'Administrativo'
@@ -783,3 +787,29 @@ def lista_ofrecimientos(request):
         ofrecimientos = Ofrecimiento.objects.filter(propuesta__vendedor__usuario=request.user)
 
     return render(request, 'CATEDRA/lista_ofrecimientos.html', {'ofrecimientos': ofrecimientos})
+
+
+@login_required
+def crear_po(request, pk_propuesta):
+    propuesta = Propuesta.objects.get(pk=pk_propuesta)
+
+    if request.method == "POST":
+        form = PurchaseOrderForm(request.POST, request.FILES)
+        form.fields['ofrecimiento'].queryset = Ofrecimiento.objects.filter(propuesta=propuesta, estado='EN EVALUACION')
+        if form.is_valid():
+            purchase_order = form.save(commit=False)
+            purchase_order.propuesta = Propuesta.objects.get(pk=pk_propuesta)
+            purchase_order.save()
+            form.save_m2m()
+            po = PurchaseOrder.objects.get(numero=purchase_order.numero)
+            ofrecimientos = po.ofrecimiento.all()
+
+            for ofrecimiento in ofrecimientos:
+                ofrecimiento.estado = 'APROBADA'
+                ofrecimiento.save()
+            return redirect('propuesta_detalle', pk_propuesta=pk_propuesta)
+    else:
+        form = PurchaseOrderForm()
+        form.fields['ofrecimiento'].queryset = Ofrecimiento.objects.filter(propuesta=propuesta, estado='EN EVALUACION')
+
+    return render(request, 'CATEDRA/po_edit.html', {'form': form})

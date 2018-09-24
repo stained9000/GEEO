@@ -11,6 +11,7 @@
 
         </div>
         <a class="button float-right" href="{% url 'propuesta_edit' pk_vendedor=propuesta.vendedor.pk pk_propuesta=propuesta.pk %}"><span class="fa fa-pencil"></span> Editar</a>
+        <a class="button float-right" href="{% url 'crear_po' pk_propuesta=propuesta.pk %}"><span class="fa fa-plus"></span> Crear PO</a>
       </div>
     </div>
   </div>

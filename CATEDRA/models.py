@@ -3,9 +3,10 @@ from django.utils import timezone
 from django.core.validators import RegexValidator
 from  datetime import datetime
 from django.contrib.auth.models import User
-
+from dal import autocomplete
 
 # Create your models here.
+
 class Municipio(models.Model):
     nombre_choices = (
     ('ADJUNTAS', 'ADJUNTAS'),
@@ -447,6 +448,8 @@ class CodigosDE(models.Model):
     def __str__(self):
         return str(self.codigo) + " " + self.modalidad
 
+
+
 class Ofrecimiento(models.Model):
     estado_choices = (
     ('EN EVALUACION', 'EN EVALUACION'),
@@ -462,3 +465,9 @@ class Ofrecimiento(models.Model):
     titulo = models.CharField(max_length=200)
     horas = models.IntegerField(default=0)
     participantes = models.IntegerField(default=0)
+
+class PurchaseOrder(models.Model):
+    propuesta = models.ForeignKey(Propuesta, on_delete=models.CASCADE)
+    ofrecimiento = models.ManyToManyField(Ofrecimiento)
+    numero = models.CharField(max_length=200)
+    documento = models.FileField(upload_to='registros/po/')
