@@ -137,6 +137,37 @@
       </div> <!-- End card -->
     </div> <!--End column -->
   </div> <!-- End row -->
+
+  <div class="row grid-responsive">
+    <div class="column">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h2>POs generados</h2>
+        </div> <!-- End card-title -->
+        <div class="card-block">
+          <table>
+            <thead>
+              <th>Fecha</th>
+              <th>Numero</th>
+              <th>No. Ofrecimientos</th>
+              <th>Acciones</th>
+            </thead>
+            <tbody>
+              {% for po in pos %}
+              <tr>
+                <td>{{po.fecha.day}} {{po.fecha.month|format_month}} {{po.fecha.year}}</td>
+                <td>{{po.numero}}</td>
+                <td>{{po.ofrecimiento.all.count}}</td>
+                <td><a href="{% url 'borrar_po' pk_propuesta=propuesta.pk pk_po=po.pk%}"><em class="fa fa-trash"></em></a> | <a href="{% url 'po_edit' pk_po=po.pk pk_propuesta=propuesta.pk %}"><em class="fa fa-edit"></em></a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div> <!-- End card-block -->
+      </div> <!-- End card -->
+    </div> <!--End column -->
+  </div> <!-- End row -->
+
   <a class="button float-right" href="{% url 'propuesta_pdf' pk_propuesta=propuesta.pk %}"><span class="fa fa-print"></span> Documento</a>
 </div>
 

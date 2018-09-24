@@ -467,6 +467,7 @@ class Ofrecimiento(models.Model):
     participantes = models.IntegerField(default=0)
 
 class PurchaseOrder(models.Model):
+    fecha = models.DateTimeField(default=timezone.now)
     propuesta = models.ForeignKey(Propuesta, on_delete=models.CASCADE)
     ofrecimiento = models.ManyToManyField(Ofrecimiento)
     numero = models.CharField(max_length=200)

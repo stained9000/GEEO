@@ -586,6 +586,7 @@ def propuesta_detalle(request, pk_propuesta):
     propuesta = Propuesta.objects.get(pk=pk_propuesta)
     personal = Personal.objects.get(escuela=propuesta.escuela)
     ofrecimientos = Ofrecimiento.objects.filter(propuesta=propuesta)
+    pos = PurchaseOrder.objects.filter(propuesta=propuesta)
 
     costo_total = 0
 
@@ -595,7 +596,7 @@ def propuesta_detalle(request, pk_propuesta):
         else:
             costo_total += ofrecimiento.codigode.costo
 
-    return render(request, 'CATEDRA/propuesta_detalle.html', {'propuesta': propuesta, 'personal': personal, 'ofrecimientos': ofrecimientos, 'costo_total': costo_total,})
+    return render(request, 'CATEDRA/propuesta_detalle.html', {'propuesta': propuesta, 'personal': personal, 'ofrecimientos': ofrecimientos, 'costo_total': costo_total, 'pos': pos,})
 
 @login_required
 def crear_ofrecimiento(request, pk_propuesta):
@@ -813,3 +814,47 @@ def crear_po(request, pk_propuesta):
         form.fields['ofrecimiento'].queryset = Ofrecimiento.objects.filter(propuesta=propuesta, estado='EN EVALUACION')
 
     return render(request, 'CATEDRA/po_edit.html', {'form': form})
+
+@login_required
+def borrar_po(request, pk_propuesta, pk_po):
+    po = PurchaseOrder.objects.get(pk=pk_po)
+    ofrecimientos = po.ofrecimiento.all()
+
+    for ofrecimiento in ofrecimientos:
+        ofrecimiento.estado = 'EN EVALUACION'
+        ofrecimiento.save()
+
+    po.delete()
+
+    return redirect('propuesta_detalle', pk_propuesta=pk_propuesta)
+
+@login_required
+def po_edit(request, pk_po, pk_propuesta):
+    po = get_object_or_404(PurchaseOrder, pk=pk_po)
+    propuesta = Propuesta.objects.get(pk=pk_propuesta)
+    ofrecimiento_queryset = po.ofrecimiento.all() | Ofrecimiento.objects.filter(propuesta=propuesta, estado='EN EVALUACION')
+    for ofrecimiento in ofrecimiento_queryset:
+        ofrecimiento.estado = 'EN EVALUACION'
+        ofrecimiento.save()
+
+
+
+    if request.method == "POST":
+        form = PurchaseOrderForm(request.POST, instance=po)
+        form.fields['ofrecimiento'].queryset = ofrecimiento_queryset
+        if form.is_valid():
+            purchase_order = form.save(commit=False)
+            purchase_order.save()
+            form.save_m2m()
+            ofrecimientos = po.ofrecimiento.all()
+
+            for ofrecimiento in ofrecimientos:
+                ofrecimiento.estado = 'APROBADA'
+                ofrecimiento.save()
+
+            return redirect('propuesta_detalle', pk_propuesta=pk_propuesta)
+    else:
+        form = PurchaseOrderForm(instance=po)
+        form.fields['ofrecimiento'].queryset = ofrecimiento_queryset
+
+    return render(request, 'CATEDRA/ofrecimiento_edit.html', {'form': form})
