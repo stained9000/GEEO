@@ -1,0 +1,60 @@
+
+{% extends 'CATEDRA/base.html' %}
+
+{% block content %}
+<div class="contenido" style="display: none;">
+  <div class="row grid-responsive">
+    <div class="column ">
+      <div class="card">
+        <div class="card-title clearfix">
+          {% if user.empleado.rol == 'Administrativo' %}
+          <h3 class="float-left">Lista de PO's</h3>
+          {% else %}
+          <h3 class="float-left">Lista de PO's - <a href="{% url 'perfil_vendedor' pk=user.empleado.pk %}">{{ user.first_name }} {{ user.last_name }}</a></h3>
+          {% endif %}
+        </div>
+        <div class="card-block">
+          <table id="" class="display">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Escuela</th>
+                <th>PO Numero</th>
+                <th>Ofrecimientos</th>
+                <th>Propuesta</th>
+                <th>Ingreso Total</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for po in pos %}
+                <tr>
+                  <td>{{po.fecha.month|format_month}} {{po.fecha.year}}</td>
+                  <td><a href="{% url 'perfil_escuela' codigo=po.propuesta.escuela.codigo %}">{{po.propuesta.escuela.nombre}}</a></td>
+                  <td>{{po.numero}}</td>
+                  <td>{{po.ofrecimiento.all.count}}</td>
+                  <td><a href="{% url 'propuesta_detalle' pk_propuesta=po.propuesta.pk %}">{{po.propuesta.pk}}</a></td>
+                  <td>$ {{po.ofrecimiento.all|po_total|format_thousands}}</td>
+                  <td><a href="{{po.documento.url}}" target="_blank"><em class="fa fa-file-text"></em></a> | <a href="{% url 'po_edit' pk_po=po.pk pk_propuesta=po.propuesta.pk %}?next={{ request.path|urlencode }}"><em class="fa fa-edit"></em></a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Fecha</th>
+                <th>Escuela</th>
+                <th>PO Numero</th>
+                <th>Ofrecimientos</th>
+                <th>Propuesta</th>
+                <th>Ingreso Total</th>
+                <th>Acciones</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

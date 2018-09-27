@@ -35,4 +35,5 @@ urlpatterns = [
     path('propuesta/<int:pk_propuesta>/po/crear/', views.crear_po, name='crear_po'),
     path('propuesta/<int:pk_propuesta>/po/<int:pk_po>/borrar', views.borrar_po, name='borrar_po'),
     path('propuesta/<int:pk_propuesta>/po/<int:pk_po>/edit', views.po_edit, name='po_edit'),
+    path('lista_po', views.lista_po, name='lista_po'),
 ]

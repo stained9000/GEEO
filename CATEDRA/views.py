@@ -830,9 +830,11 @@ def borrar_po(request, pk_propuesta, pk_po):
 
 @login_required
 def po_edit(request, pk_po, pk_propuesta):
+    next = request.GET.get('next', '/')
     po = get_object_or_404(PurchaseOrder, pk=pk_po)
     propuesta = Propuesta.objects.get(pk=pk_propuesta)
     ofrecimiento_queryset = po.ofrecimiento.all() | Ofrecimiento.objects.filter(propuesta=propuesta, estado='EN EVALUACION')
+    
     for ofrecimiento in ofrecimiento_queryset:
         ofrecimiento.estado = 'EN EVALUACION'
         ofrecimiento.save()
@@ -852,9 +854,19 @@ def po_edit(request, pk_po, pk_propuesta):
                 ofrecimiento.estado = 'APROBADA'
                 ofrecimiento.save()
 
-            return redirect('propuesta_detalle', pk_propuesta=pk_propuesta)
+            return HttpResponseRedirect(next)
     else:
         form = PurchaseOrderForm(instance=po)
         form.fields['ofrecimiento'].queryset = ofrecimiento_queryset
 
-    return render(request, 'CATEDRA/ofrecimiento_edit.html', {'form': form})
+    return render(request, 'CATEDRA/po_edit.html', {'form': form})
+
+@login_required
+def lista_po(request):
+
+    if request.user.empleado.rol == 'Administrativo':
+        pos = PurchaseOrder.objects.all()
+    else:
+        pos = PurchaseOrder.objects.filter(propuesta__vendedor__usuario=request.user)
+
+    return render(request, 'CATEDRA/lista_po.html', {'pos': pos})

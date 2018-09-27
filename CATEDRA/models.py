@@ -466,6 +466,9 @@ class Ofrecimiento(models.Model):
     horas = models.IntegerField(default=0)
     participantes = models.IntegerField(default=0)
 
+    def __str__(self):
+        return str(self.codigode.codigo) + " - " + self.codigode.modalidad + " / " + self.titulo
+
 class PurchaseOrder(models.Model):
     fecha = models.DateTimeField(default=timezone.now)
     propuesta = models.ForeignKey(Propuesta, on_delete=models.CASCADE)

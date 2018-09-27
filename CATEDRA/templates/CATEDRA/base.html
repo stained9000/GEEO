@@ -1,5 +1,5 @@
 {% load static %}
-{% load absolute format_capitalize format_percent format_thousands my_filters subtract to_datetime to_range_loss to_range multiply count_visitas string_truncate format_mayus format_month %}
+{% load absolute format_capitalize format_percent format_thousands my_filters subtract to_datetime to_range_loss to_range multiply count_visitas string_truncate format_mayus format_month po_total %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +12,7 @@
 
 	<!-- Template Styles -->
 	<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
 	<!-- CSS Reset -->
 	<link rel="stylesheet" href="{% static 'css/normalize.css' %}">
@@ -77,6 +78,7 @@
 					{% endif %}
 					<li><a href="{% url 'historial_visitas' %}"><em class="fa fa-briefcase"></em> Visitas</a></li>
 					<li><a href="{% url 'lista_ofrecimientos' %}"><em class="fa fa-tasks"></em> Ofrecimientos</a></li>
+					<li><a href="{% url 'lista_po' %}"><em class="fa fa-file-invoice-dollar"></em> Lista de PO's</a></li>
 				{% else %}
 				{% endif %}
 			</ul>
