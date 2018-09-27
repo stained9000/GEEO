@@ -265,7 +265,7 @@ def cargar_escuelas(request):
     # results_df = pd.DataFrame.from_records(result_list)
 
 
-    for escuela in results[725:]:
+    for escuela in results[900:]:
         #Filtro de codigos de escuelas invalidos
         try:
             int(escuela['codigo'])
