@@ -3,7 +3,6 @@
 __pycache__
 geeovenv
 db.sqlite3
-/static
 .DS_Store
 /imagenes
 /media/registros/visitas
