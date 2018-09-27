@@ -264,6 +264,8 @@ def cargar_escuelas(request):
     # Convert to pandas DataFrame
     # results_df = pd.DataFrame.from_records(result_list)
 
+    response = HttpResponse()
+
     for escuela in results:
         #Filtro de codigos de escuelas invalidos
         try:
@@ -384,6 +386,8 @@ def cargar_escuelas(request):
         else:
             destreza_obj.fecha_modificacion = timezone.now()
             destreza_obj.save()
+
+        response.write("Escuela agregada")
 
     return render(request, 'CATEDRA/cargar_escuelas.html', {})
 
@@ -834,7 +838,7 @@ def po_edit(request, pk_po, pk_propuesta):
     po = get_object_or_404(PurchaseOrder, pk=pk_po)
     propuesta = Propuesta.objects.get(pk=pk_propuesta)
     ofrecimiento_queryset = po.ofrecimiento.all() | Ofrecimiento.objects.filter(propuesta=propuesta, estado='EN EVALUACION')
-    
+
     for ofrecimiento in ofrecimiento_queryset:
         ofrecimiento.estado = 'EN EVALUACION'
         ofrecimiento.save()
