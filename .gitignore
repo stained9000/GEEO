@@ -8,3 +8,4 @@ db.sqlite3
 /imagenes
 /media/registros/visitas
 /media/registros/po
+local_settings.py
