@@ -28,7 +28,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com', '127.0.0.1', '.herokuapp.com']
 
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -83,7 +82,7 @@ try:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'GEEO',
+            'NAME': 'scumbagroyale',
             'USER': 'name',
             'PASSWORD': '',
             'HOST': 'localhost',
@@ -96,9 +95,6 @@ try:
 except:
     from .local_settings import *
 
-
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
