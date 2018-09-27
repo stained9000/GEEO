@@ -264,9 +264,8 @@ def cargar_escuelas(request):
     # Convert to pandas DataFrame
     # results_df = pd.DataFrame.from_records(result_list)
 
-    response = HttpResponse()
 
-    for escuela in results:
+    for escuela in results[725:]:
         #Filtro de codigos de escuelas invalidos
         try:
             int(escuela['codigo'])
@@ -387,7 +386,7 @@ def cargar_escuelas(request):
             destreza_obj.fecha_modificacion = timezone.now()
             destreza_obj.save()
 
-        response.write("Escuela agregada")
+
 
     return render(request, 'CATEDRA/cargar_escuelas.html', {})
 
