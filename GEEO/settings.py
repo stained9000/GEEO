@@ -95,10 +95,10 @@ try:
     DATABASES['default'].update(db_from_env)
 except:
     from .local_settings import *
-
+"""
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-"""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
