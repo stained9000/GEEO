@@ -14,50 +14,52 @@
           {% endif %}
         </div>
         <div class="card-block">
-          <table id="" class="display">
-            <thead>
-              <tr>
-                <th>Codigo Ofrecimiento</th>
-                <th>Codigo Propuesta</th>
-                <th>Escuela</th>
-                <th>Modalidad/Codigo</th>
-                <th>Titulo</th>
-                <th>Ingreso Total</th>
-                <th>Mes/Año</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for ofrecimiento in ofrecimientos %}
+          <div class="table-responsive">
+            <table id="" class="table table-striped table-hover dt-responsive display nowrap" cellspacing="0" style="width: 100%;">
+              <thead>
                 <tr>
-                  <td><a href="#">{{ofrecimiento.pk}}</a></td>
-                  <td><a href="{% url 'propuesta_detalle' pk_propuesta=ofrecimiento.propuesta.pk %}">{{ofrecimiento.propuesta.pk}}</a></td>
-                  <td>{{ofrecimiento.propuesta.escuela.nombre}}</td>
-                  <td>{{ofrecimiento.codigode}}</td>
-                  <td>{{ofrecimiento.titulo}}</td>
-                  {% if ofrecimiento.codigode.codigo == 11829 %}
-                  <td>${{ofrecimiento.codigode.costo|multiply:ofrecimiento.participantes|format_thousands}}</td>
-                  {% else %}
-                  <td>${{ofrecimiento.codigode.costo|format_thousands}}</td>
-                  {% endif %}
-                  <td>{{ofrecimiento.propuesta.fecha.month|format_month}} {{ofrecimiento.propuesta.fecha.year}}</td>
-                  <td>{{ofrecimiento.estado}}</td>
+                  <th>Codigo Ofrecimiento</th>
+                  <th>Codigo Propuesta</th>
+                  <th>Escuela</th>
+                  <th>Modalidad/Codigo</th>
+                  <th>Titulo</th>
+                  <th>Ingreso Total</th>
+                  <th>Mes/Año</th>
+                  <th>Estado</th>
                 </tr>
-              {% endfor %}
-            </tbody>
-            <tfoot>
-              <tr>
-                <th>Codigo Ofrecimiento</th>
-                <th>Codigo Propuesta</th>
-                <th>Escuela</th>
-                <th>Modalidad/Codigo</th>
-                <th>Titulo</th>
-                <th>Ingreso Total</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-              </tr>
-            </tfoot>
-          </table>
+              </thead>
+              <tbody>
+                {% for ofrecimiento in ofrecimientos %}
+                  <tr>
+                    <td><a href="#">{{ofrecimiento.pk}}</a></td>
+                    <td><a href="{% url 'propuesta_detalle' pk_propuesta=ofrecimiento.propuesta.pk %}">{{ofrecimiento.propuesta.pk}}</a></td>
+                    <td>{{ofrecimiento.propuesta.escuela.nombre}}</td>
+                    <td>{{ofrecimiento.codigode}}</td>
+                    <td>{{ofrecimiento.titulo}}</td>
+                    {% if ofrecimiento.codigode.codigo == 11829 %}
+                    <td>${{ofrecimiento.codigode.costo|multiply:ofrecimiento.participantes|format_thousands}}</td>
+                    {% else %}
+                    <td>${{ofrecimiento.codigode.costo|format_thousands}}</td>
+                    {% endif %}
+                    <td>{{ofrecimiento.propuesta.fecha.month|format_month}} {{ofrecimiento.propuesta.fecha.year}}</td>
+                    <td>{{ofrecimiento.estado}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Codigo Ofrecimiento</th>
+                  <th>Codigo Propuesta</th>
+                  <th>Escuela</th>
+                  <th>Modalidad/Codigo</th>
+                  <th>Titulo</th>
+                  <th>Ingreso Total</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
       </div>
     </div>
