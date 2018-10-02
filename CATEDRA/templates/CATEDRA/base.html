@@ -1,4 +1,3 @@
-{% load staticfiles %}
 {% load static %}
 {% load absolute format_capitalize format_percent format_thousands my_filters subtract to_datetime to_range_loss to_range multiply count_visitas string_truncate format_mayus format_month po_total %}
 <!DOCTYPE html>
@@ -24,11 +23,11 @@
 	<!-- Main Styles -->
 	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
-	<script src="{% static '/js/jquery-3.3.1.min.js' %}"></script>
+	<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 
-	<link rel="stylesheet" type="text/css" href="{% static '/js/DataTables/datatables.min.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'js/DataTables/datatables.min.css' %}"/>
 
-	<script type="text/javascript" src="{% static '/js/DataTables/datatables.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/DataTables/datatables.min.js' %}"></script>
 
 
 
