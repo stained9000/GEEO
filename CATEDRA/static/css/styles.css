@@ -291,10 +291,10 @@ select:focus {
   margin-right: 12px; }
   #main-content .page-heading {
     margin-bottom: 20px; }
-
+/*
 #visitadas, #sin-visita {
   height: 690px;
-}
+}*/
 .card {
   background: #fff;
   box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.05);
@@ -430,10 +430,10 @@ select:focus {
       top: 12px; }
     .navbar input[type=text] {
       margin: 0; }
-
+/*
     #visitadas, #sin-visita {
         height: 790px; }
-
+*/
   #sidebar {
     position: static;
     width: 100% !important;
@@ -510,8 +510,10 @@ select:focus {
     margin-right: 20px; }
     .user-section .username {
       display: none; } }
+/*
   #visitadas, #sin-visita {
         height: 790px; }
+*/
 @media (min-width: 768px) and (max-width: 960px) {
   .row.grid-responsive {
     flex-direction: column; }
@@ -548,9 +550,10 @@ select:focus {
     margin-right: 20px; }
     .user-section .username {
       display: none; } }
+/*
   #visitadas, #sin-visita {
     height: 790px; }
-
+*/
 .w3-light-grey {
     color:#000!important;background-color:#f1f1f1!important;
 }

@@ -664,8 +664,9 @@ def propuesta_pdf(request, pk_propuesta):
                 return None
 
      # Create the HttpResponse object with the appropriate PDF headers.
+    filename = 'attachment; filename=' + '"Porpuesta No.' + str(propuesta.pk) + ' - ' + str(propuesta.escuela.nombre) + '.pdf"'
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
+    response['Content-Disposition'] = filename
 
     buffer = BytesIO()
 
