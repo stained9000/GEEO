@@ -31,8 +31,8 @@
               <tbody>
                 {% for ofrecimiento in ofrecimientos %}
                   <tr>
-                    <td><a href="#">{{ofrecimiento.pk}}</a></td>
-                    <td><a href="{% url 'propuesta_detalle' pk_propuesta=ofrecimiento.propuesta.pk %}">{{ofrecimiento.propuesta.pk}}</a></td>
+                    <td>{{ofrecimiento.pk}}</td>
+                    <td><a href=" {% url 'propuesta_detalle' pk_propuesta=ofrecimiento.propuesta.pk %}">{{ofrecimiento.propuesta.pk}}</a></td>
                     <td>{{ofrecimiento.propuesta.escuela.nombre}}</td>
                     <td>{{ofrecimiento.codigode}}</td>
                     <td>{{ofrecimiento.titulo}}</td>

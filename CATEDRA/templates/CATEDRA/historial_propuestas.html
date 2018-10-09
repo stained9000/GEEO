@@ -6,7 +6,11 @@
     <div class="column ">
       <div class="card">
         <div class="card-title clearfix">
+          {% if user.empleado.rol == 'Vendedor' %}
           <h3 class="float-left">Historial de propuestas de <a href="{% url 'perfil_vendedor' pk=vendedor.pk %}">{{vendedor.usuario.first_name}} {{vendedor.usuario.last_name}}</a></h3>
+          {% else %}
+          <h3 class="float-left">Historial de propuestas</h3>
+          {% endif %}
           <a class="button float-right" href="{% url 'crear_propuesta' pk_vendedor=vendedor.pk %}"> Crear Propuesta</a>
         </div>
         <div class="card-block">

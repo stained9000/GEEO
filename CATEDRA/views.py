@@ -528,19 +528,10 @@ def historial_visitas(request):
 @login_required
 def historial_propuestas(request, pk):
     vendedor = get_object_or_404(Empleado, pk=pk)
-    propuestas = Propuesta.objects.filter(vendedor=vendedor).order_by("-fecha")
-
-    #paginator propuestas
-    page = request.GET.get('page', 1)
-
-    paginator = Paginator(propuestas, 6)
-
-    try:
-        propuestas = paginator.page(page)
-    except PageNotAnInteger:
-        propuestas = paginator.page(1)
-    except EmptyPage:
-        propuestas = paginator.page(paginator.num_pages)
+    if vendedor.rol == 'Vendedor':
+        propuestas = Propuesta.objects.filter(vendedor=vendedor).order_by("-fecha")
+    else:
+        propuestas = Propuesta.objects.all()
 
     return render(request, 'CATEDRA/historial_propuestas.html', {'vendedor': vendedor, 'propuestas': propuestas,})
 

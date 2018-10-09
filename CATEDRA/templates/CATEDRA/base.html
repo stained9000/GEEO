@@ -43,9 +43,11 @@
 	<div class="navbar">
 		<div class="row">
 			<div class="column column-30 col-site-title"><a href="#" class="site-title float-left"><span class="fa fa-globe" style="font-size: 40px;"></span> GEEO</a></div>
+			<!--
 			<div class="column column-40 col-search"><a href="#" class="search-btn fa fa-search"></a>
 				<input type="text" name="" value="" placeholder="Buscar..." />
 			</div>
+			-->
 			<div class="column column-30">
 				<div class="user-section"><a href="{% url 'logout' %}?next={{request.path}}">
 					{% if user.is_authenticated %}
@@ -70,13 +72,15 @@
 			<ul>
 				<li><a href="{% url 'inicio' %}"><em class="fa fa-home"></em> Inicio</a></li>
 				{% if user.is_authenticated %}
-					{% if user.empleado.rol == 'Vendedor'%}
-					<li><a href="{% url 'historial_propuestas' pk=user.empleado.pk %}"><em class="fa fa-balance-scale"></em> Propuestas</a></li>
-					{% else %}
+
+
+
 					<li><a href="{% url 'lista_escuelas' %}"><em class="fa fa-building"></em> Escuelas</a></li>
+					{% if user.empleado.rol != 'Vendedor' %}
 					<li><a href="{% url 'lista_vendedores' %}"><em class="fa fa-users"></em> Vendedores</a></li>
 					{% endif %}
 					<li><a href="{% url 'historial_visitas' %}"><em class="fa fa-briefcase"></em> Visitas</a></li>
+					<li><a href="{% url 'historial_propuestas' pk=user.empleado.pk %}"><em class="fa fa-balance-scale"></em> Propuestas</a></li>
 					<li><a href="{% url 'lista_ofrecimientos' %}"><em class="fa fa-tasks"></em> Ofrecimientos</a></li>
 					<li><a href="{% url 'lista_po' %}"><em class="fa fa-file-invoice-dollar"></em> Lista de PO's</a></li>
 				{% else %}
