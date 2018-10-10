@@ -705,16 +705,16 @@ def propuesta_pdf(request, pk_propuesta):
 
     #table
     costo_total = 0
-    data= [['Participantes', 'Materia', 'Modalidad/Codigo', 'Estrategia', 'Titulo', 'Horas', 'Costo', 'Total'],
+    data= [['Cantidad', 'Materia', 'Modalidad/Codigo', 'Estrategia', 'Titulo', 'Horas', 'Costo', 'Total'],
            ]
 
     for ofrecimiento in ofrecimientos:
         if ofrecimiento.codigode.codigo == 11829:
             costo_total += ofrecimiento.codigode.costo * ofrecimiento.participantes
-            data.append([str(ofrecimiento.participantes), ofrecimiento.materia, str(ofrecimiento.codigode.codigo), ofrecimiento.estrategia, ofrecimiento.titulo, str(ofrecimiento.horas), str(format_thousands(ofrecimiento.codigode.costo)), str(format_thousands(ofrecimiento.codigode.costo*ofrecimiento.participantes))])
+            data.append([str(ofrecimiento.participantes), ofrecimiento.materia, str(ofrecimiento.codigode.modalidad) + " / " + str(ofrecimiento.codigode.codigo), ofrecimiento.estrategia, ofrecimiento.titulo, str(ofrecimiento.horas), str(format_thousands(ofrecimiento.codigode.costo)), str(format_thousands(ofrecimiento.codigode.costo*ofrecimiento.participantes))])
         else:
             costo_total += ofrecimiento.codigode.costo
-            data.append([str(ofrecimiento.participantes), ofrecimiento.materia, str(ofrecimiento.codigode.codigo), ofrecimiento.estrategia, ofrecimiento.titulo, str(ofrecimiento.horas), str(format_thousands(ofrecimiento.codigode.costo)), str(format_thousands(ofrecimiento.codigode.costo))])
+            data.append(["1", ofrecimiento.materia, str(ofrecimiento.codigode.modalidad) + " / " + str(ofrecimiento.codigode.codigo), ofrecimiento.estrategia, ofrecimiento.titulo, str(ofrecimiento.horas), str(format_thousands(ofrecimiento.codigode.costo)), str(format_thousands(ofrecimiento.codigode.costo))])
 
     data.append(['', '', '', '', '', '', 'Total', str(format_thousands(costo_total)),])
 
@@ -722,7 +722,7 @@ def propuesta_pdf(request, pk_propuesta):
     s = s["BodyText"]
     s.wordWrap = 'CJK'
     data2 = [[Paragraph(cell, s) for cell in row] for row in data]
-    t=Table(data2, colWidths=[inch*0.8, inch*0.8, inch*0.9, inch*1, inch*3, inch*0.6, inch*1, inch*1],  rowHeights=inch*0.6)
+    t=Table(data2, colWidths=[inch*0.8, inch*0.8, inch*0.9, inch*1, inch*3, inch*0.6, inch*1, inch*1],  rowHeights=inch*0.7)
 
     t.setStyle(TableStyle([('ALIGN',(0,0),(-1,1),'CENTER'),
                         ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
@@ -730,7 +730,7 @@ def propuesta_pdf(request, pk_propuesta):
                         ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
                         ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                         ]))
-    tableheight = len(data) * inch * 0.6 + 140
+    tableheight = len(data) * inch * 0.7 + 140
 
     t.wrap(648, 358)
     t.drawOn(p, 0, -tableheight)

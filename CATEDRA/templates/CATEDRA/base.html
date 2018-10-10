@@ -21,8 +21,11 @@
 	<link rel="stylesheet" href="{% static 'css/milligram.min.css' %}">
 
 	<!-- Main Styles -->
-	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
+	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+	<!--
+	<link rel="stylesheet" href="/static/css/styles.css">
+	-->
 	<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 
 	<link rel="stylesheet" type="text/css" href="{% static 'js/DataTables/datatables.min.css' %}"/>
@@ -35,7 +38,14 @@
 	<!--[if lt IE 9]>
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
-
+<style type="text/css">
+	@media (max-width: 1565px) {
+		.ofrecimiento-materia {display: none;}
+	  .ofrecimiento-estrategia {display: none;}
+	  .ofrecimiento-titulo {display: none;}
+	  .ofrecimiento-horas {display: none;}
+	}
+</style>
 
 </head>
 
@@ -117,6 +127,7 @@ $(document).ready( function () {
 			}
 	} );
 	$('.contenido').fadeIn('slow');
+	$(window).trigger('resize');
 } );
 </script>
 </body>
