@@ -85,8 +85,9 @@
 
 
 
-					<li><a href="{% url 'lista_escuelas' %}"><em class="fa fa-building"></em> Escuelas</a></li>
+
 					{% if user.empleado.rol != 'Vendedor' %}
+					<li><a href="{% url 'lista_escuelas' %}"><em class="fa fa-building"></em> Escuelas</a></li>
 					<li><a href="{% url 'lista_vendedores' %}"><em class="fa fa-users"></em> Vendedores</a></li>
 					{% endif %}
 					<li><a href="{% url 'historial_visitas' %}"><em class="fa fa-briefcase"></em> Visitas</a></li>
