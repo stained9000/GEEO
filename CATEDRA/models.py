@@ -468,7 +468,7 @@ class CodigosDE(models.Model):
 
     )
 
-    tipo = models.CharField(max_length=200, choices=tipo_choices, default='Publica - Maestros')
+    tipo = models.CharField(max_length=200, choices=tipo_choices, default='Publica - Maestros', blank=True, null=True)
     codigo = models.IntegerField(primary_key=True)
     modalidad = models.CharField(max_length=200)
     descripcion = models.CharField(max_length=200)
