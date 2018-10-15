@@ -10,10 +10,61 @@
         </div> <!-- End card-title -->
         <div class="card-block">
           <form enctype="multipart/form-data" method="POST" class="post-form">{% csrf_token %}
-            {{form}}
+            <div class="fieldWrapper">
+              <label for="id_estado">Estado:</label>
+              <select name="estado" id="id_estado">
+                <option value="EN EVALUACION">EN EVALUACION</option>
+                <option value="APROBADA">APROBADA</option>
+                <option value="RECHAZADA">RECHAZADA</option>
+              </select>
+            </div>
+            <div class="fieldWrapper">
+              <label for="id_codigode">Codigo Departamento Educacion:</label>
+              <select name="codigode" required id="id_codigode">
+                <option value selected> ---------- </option>
+                {% for codigo in codigosde %}
+                <option value="{{codigo.codigo}}">{{codigo}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="fieldWrapper">
+              <label for="id_materia">Materia:</label>
+              <input type="text" name="materia" maxlength="200" required id="id_materia">
+            </div>
+            <div class="fieldWrapper">
+              <label for="id_estrategia">Estategia/Enfoque:</label>
+              <select name="estrategia" required id="id_estrategia">
+                <option value selected> ---------- </option>
+                {% for estrategia in estrategias %}
+                <option value="{{estrategia|lookup:'estrategia'}}">{{estrategia|lookup:'estrategia'}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="fieldWrapper">
+              <label for="id_titulo">Titulo:</label>
+              <select name="titulo" required id="id_titulo" disabled="True">
+                <option value selected> Seleccione una Estrategia o Enfoque </option>
+                <!--
+                {% for titulo in titulos %}
+                <option value="{{titulo|lookup:'titulo'}}">{{titulo|lookup:'titulo'}}</option>
+                {% endfor %}
+              -->
+              </select>
+            </div>
+            <div class="fieldWrapper">
+              <label for="id_horas">Horas:</label>
+              <input type="number" name="horas" value="0" required id="id_horas">
+            </div>
+            <div class="fieldWrapper">
+              <label for="id_participantes">Participantes:</label>
+              <input type="number" name="participantes" value="0" required id="id_horas">
+            </div>
             <br/>
             <button type="submit"><span class="fa fa-save"></span> Guardar</button>
           </form>
+          <script>
+
+          </script>
         </div> <!-- End card-block -->
       </div> <!-- End card -->
     </div> <!-- End column -->

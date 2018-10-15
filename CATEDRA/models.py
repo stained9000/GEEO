@@ -7,6 +7,15 @@ from dal import autocomplete
 
 # Create your models here.
 
+class Servicio(models.Model):
+    tipo = models.CharField(max_length=200)
+    estrategia = models.CharField(max_length=200)
+    titulo = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.tipo + " - " + self.estrategia + " - " + self.titulo
+
+
 class Municipio(models.Model):
     nombre_choices = (
     ('ADJUNTAS', 'ADJUNTAS'),
@@ -434,12 +443,32 @@ class Propuesta(models.Model):
     ('P.O. GENERADO', 'P.O. GENERADO'),
     )
 
+    tipo_choices = (
+        ('Colegio - Maestros', 'Colegio - Maestros'),
+        ('Colegio - Padres', 'Colegio - Padres'),
+        ('Publica - Maestros', 'Publica - Maestros'),
+        ('Publica - Padres', 'Publica - Padres'),
+
+    )
+
+    tipo = models.CharField(max_length=200, choices=tipo_choices, default='Maestros')
     escuela = models.ForeignKey(Escuela, on_delete=models.CASCADE)
     vendedor = models.ForeignKey(Empleado, on_delete=models.CASCADE)
     fecha = models.DateField(default=timezone.now)
     estado = models.CharField(max_length=200, choices=estado_choices, default='CREADA')
+    necesidad = models.CharField(max_length=200, null=True, blank=True)
+    descripcion = models.CharField(max_length=200, null=True, blank=True)
 
 class CodigosDE(models.Model):
+    tipo_choices = (
+        ('Colegio - Maestros', 'Colegio - Maestros'),
+        ('Colegio - Padres', 'Colegio - Padres'),
+        ('Publica - Maestros', 'Publica - Maestros'),
+        ('Publica - Padres', 'Publica - Padres'),
+
+    )
+
+    tipo = models.CharField(max_length=200, choices=tipo_choices, default='Publica - Maestros')
     codigo = models.IntegerField(primary_key=True)
     modalidad = models.CharField(max_length=200)
     descripcion = models.CharField(max_length=200)

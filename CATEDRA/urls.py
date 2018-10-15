@@ -18,6 +18,7 @@ urlpatterns = [
     path('escuela/<int:codigo>/actividad/crear/', views.crear_actividad, name='crear_actividad'),
     path('escuela/<int:codigo>/actividad/<int:pk>/editar/', views.actividad_edit, name='actividad_edit'),
     path('cargar_escuelas/', views.cargar_escuelas, name='cargar_escuelas'),
+    path('cargar_servicios/', views.cargar_servicios, name='cargar_servicios'),
     path('vendedores', views.lista_vendedores, name='lista_vendedores'),
     path('vendedor/<int:pk>/', views.perfil_vendedor, name='perfil_vendedor'),
     path('vendedor/<int:pk_vendedor>/visita/crear', views.crear_visita, name='crear_visita'),
@@ -36,4 +37,6 @@ urlpatterns = [
     path('propuesta/<int:pk_propuesta>/po/<int:pk_po>/borrar', views.borrar_po, name='borrar_po'),
     path('propuesta/<int:pk_propuesta>/po/<int:pk_po>/edit', views.po_edit, name='po_edit'),
     path('lista_po', views.lista_po, name='lista_po'),
+    path('catalogo_servicios', views.catalogo_servicios, name='catalogo_servicios'),
+    path('estrategia/<str:estrategia>/ofrecimiento_titulos_json', views.ofrecimiento_titulos_json, name='ofrecimiento_titulos_json'),
 ]

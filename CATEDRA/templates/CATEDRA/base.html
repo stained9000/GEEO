@@ -94,6 +94,7 @@
 					<li><a href="{% url 'historial_propuestas' pk=user.empleado.pk %}"><em class="fa fa-balance-scale"></em> Propuestas</a></li>
 					<li><a href="{% url 'lista_ofrecimientos' %}"><em class="fa fa-tasks"></em> Ofrecimientos</a></li>
 					<li><a href="{% url 'lista_po' %}"><em class="fa fa-file-invoice-dollar"></em> Lista de PO's</a></li>
+					<li><a href="{% url 'catalogo_servicios' %}"><em class="fa fa-file-invoice-dollar"></em> Catalogo Servicios</a></li>
 				{% else %}
 				{% endif %}
 			</ul>
@@ -129,6 +130,26 @@ $(document).ready( function () {
 	} );
 	$('.contenido').fadeIn('slow');
 	$(window).trigger('resize');
+
+	$("select#id_estrategia").change(function() {
+		if ($(this).val() == '') {
+			$("select#id_titulo").html("<option>Seleccione una estrategia o enfoque</option>");
+			$("select#id_titulo").attr('disabled', true);
+		}
+		else {
+			var url = "/estrategia/" + $(this).val() + "/ofrecimiento_titulos_json";
+			var estrategia = $(this).val();
+			$.getJSON(url, function(titulos) {
+				var options = '<option value="">Seleccione un Titulo</option>';
+				for (var i = 0; i < titulos.length; i++) {
+					options += '<option value="' + titulos[i].titulo + '">' + titulos[i].titulo + '</option>';
+				}
+				$("select#id_titulo").html(options);
+				$("select#id_titulo option:first").attr('selected', 'selected');
+				$("select#id_titulo").attr('disabled', false);
+			});
+		}
+	});
 } );
 </script>
 </body>

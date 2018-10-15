@@ -7,7 +7,17 @@
       <div class="large-card clearfix">
         <div class="float-left">
           <h2>Propuesta No. {{propuesta.pk}} - Escuela {{propuesta.escuela.nombre}}</h2>
+
           <em>Creada en {{propuesta.fecha}} - Estado: {{propuesta.estado}}</em>
+          <br>
+          <br>
+          {% if propuesta.tipo == 'Colegio - Maestros' %}
+          <em>Propuesta de Adecuacion Profesional Colegios</em>
+          {% elif propuesta.tipo == 'Publica - Maestros' %}
+          <em>Propuesta de Adecuancion Profesional</em>
+          {% else %}
+          <em>Propuesta de Padres</em>
+          {% endif %}
 
         </div>
         <a class="button float-right" href="{% url 'propuesta_edit' pk_vendedor=propuesta.vendedor.pk pk_propuesta=propuesta.pk %}"><span class="fa fa-pencil-alt"></span> Editar</a>

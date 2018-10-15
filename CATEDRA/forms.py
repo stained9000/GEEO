@@ -50,7 +50,7 @@ class PropuestaForm(forms.ModelForm):
 
     class Meta:
         model = Propuesta
-        fields = ('escuela', 'fecha', 'estado',)
+        fields = ('tipo', 'escuela', 'fecha', 'estado', 'necesidad', 'descripcion')
 
 class OfrecimientoForm(forms.ModelForm):
 
@@ -63,4 +63,3 @@ class PurchaseOrderForm(forms.ModelForm):
     class Meta:
         model = PurchaseOrder
         fields = ('numero', 'ofrecimiento', 'documento',)
-        

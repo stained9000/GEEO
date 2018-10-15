@@ -1,0 +1,43 @@
+{% extends 'CATEDRA/base.html' %}
+
+{% block content %}
+<div class="contenido" style="display: none;">
+  <div class="row grid-responsive">
+    <div class="column ">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h3 class="float-left">Catalogo de servicios</h3>
+        </div>
+        <div class="card-block">
+          <table id="" class="display">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Estategia/Enfoque</th>
+                <th>Titulo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for servicio in servicios %}
+                <tr>
+                  <td>{{servicio.tipo}}</td>
+                  <td>{{servicio.estrategia}}</td>
+                  <td>{{servicio.titulo}}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Tipo</th>
+                <th>Estrategia/Enfoque</th>
+                <th>Titulo</th>
+              </tr>
+          </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

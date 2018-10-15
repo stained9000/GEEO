@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Empleado, Municipio, Propuesta, Ofrecimiento, CodigosDE, PurchaseOrder
+from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Empleado, Municipio, Propuesta, Ofrecimiento, CodigosDE, PurchaseOrder, Servicio
 from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezaForm, ActividadForm, VisitaForm, PresupuestoForm, PropuestaForm, OfrecimientoForm, PurchaseOrderForm
 from django.utils import timezone
 from sodapy import Socrata
@@ -23,6 +23,9 @@ from reportlab.lib.utils import ImageReader
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
 
+import openpyxl
+from django.core import serializers
+import json
 # Create your views here.
 
 
@@ -594,6 +597,10 @@ def propuesta_detalle(request, pk_propuesta):
 
 @login_required
 def crear_ofrecimiento(request, pk_propuesta):
+    propuesta = Propuesta.objects.get(pk=pk_propuesta)
+    codigosde = CodigosDE.objects.filter(tipo=propuesta.tipo)
+    estrategias = Servicio.objects.all().order_by('estrategia').values('estrategia').distinct()
+    titulos = Servicio.objects.all().order_by('titulo').values('titulo').distinct()
 
     if request.method == "POST":
         form = OfrecimientoForm(request.POST, request.FILES)
@@ -605,7 +612,7 @@ def crear_ofrecimiento(request, pk_propuesta):
     else:
         form = OfrecimientoForm()
 
-    return render(request, 'CATEDRA/ofrecimiento_edit.html', {'form': form})
+    return render(request, 'CATEDRA/ofrecimiento_edit.html', {'form': form, 'codigosde': codigosde, 'estrategias': estrategias, 'titulos': titulos,})
 
 @login_required
 def ofrecimiento_edit(request, pk_ofrecimiento, pk_propuesta):
@@ -672,36 +679,47 @@ def propuesta_pdf(request, pk_propuesta):
     p.translate(inch,inch*7.5)
 
     #Titulo
-    p.drawImage(image, 0, -30, width=100, height=100, mask='auto')
-    p.drawString(144, 0, 'PROPUESTA DE TALLERES DE ADECUACION PROFESIONAL')
+    if propuesta.tipo == 'Publica - Maestros':
+        p.drawImage(image, 0, -30, width=100, height=100, mask='auto')
+        p.drawString(144, 0, 'PROPUESTA DE TALLERES DE ADECUACION PROFESIONAL')
+    elif propuesta.tipo == 'Colegio - Maestros':
+        p.drawImage(image, 0, -30, width=100, height=100, mask='auto')
+        p.drawString(144, 0, 'PROPUESTA DE TALLERES DE ADECUACION PROFESIONAL COLEGIOS')
+    elif propuesta.tipo == 'Publica - Padres':
+        p.drawImage(image, 0, -30, width=100, height=100, mask='auto')
+        p.drawString(144, 0, 'PROPUESTA DE TALLERES A PADRES')
+    else:
+        p.drawImage(image, 0, -30, width=100, height=100, mask='auto')
+        p.drawString(144, 0, 'PROPUESTA DE TALLERES A PADRES COLEGIOS')
+
 
     #Linea 1
     p.setFont('Helvetica', 10)
-    p.drawString(0,-36,'Escuela: ' + propuesta.escuela.nombre)
-    p.line(40, -38, 203, -38)
+    p.drawString(0,-26,'Escuela: ' + propuesta.escuela.nombre)
+    p.line(40, -28, 203, -28)
 
-    p.drawString(216,-36,'Codigo: ' + xstr(propuesta.escuela.codigo))
-    p.line(254,-38,417,-38)
+    p.drawString(216,-26,'Código: ' + xstr(propuesta.escuela.codigo))
+    p.line(254,-28,417,-28)
 
-    p.drawString(430, -36, 'Tel/Fax: ' + propuesta.escuela.telefono)
-    p.line(470, -38, 650, -38)
+    p.drawString(430, -26, 'Tel/Fax: ' + propuesta.escuela.telefono)
+    p.line(470, -28, 650, -28)
 
     #Linea 2
-    p.drawString(0, -72, 'Region Educativa: ' + propuesta.escuela.region_educativa)
-    p.line(84, -74, 203, -74)
+    p.drawString(0, -42, 'Región Educativa: ' + propuesta.escuela.region_educativa)
+    p.line(84, -44, 203, -44)
 
-    p.drawString(216, -72, 'Distrito: ' + propuesta.escuela.distrito_escolar)
-    p.line(254, -74, 417, -74)
+    p.drawString(216, -42, 'Distrito: ' + propuesta.escuela.distrito_escolar)
+    p.line(254, -44, 417, -44)
 
-    p.drawString(430, -72, 'Direccion: ' + propuesta.escuela.direccion_fisica)
-    p.line(477, -74, 650, -74)
+    p.drawString(430, -42, 'Dirección: ' + propuesta.escuela.direccion_fisica)
+    p.line(477, -44, 650, -44)
 
     #Linea 3
-    p.drawString(0, -108, "Director(a): " + xstr(personal.nombre_del_director))
-    p.line(53, -110, 203, -110)
+    p.drawString(0, -58, "Director(a): " + xstr(personal.nombre_del_director))
+    p.line(53, -60, 203, -60)
 
-    p.drawString(216, -108, 'E-mail: ' + xstr(personal.email_del_director))
-    p.line(250, -110, 417, -110)
+    p.drawString(216, -58, 'E-mail: ' + xstr(personal.email_del_director))
+    p.line(250, -60, 417, -60)
 
     #table
     costo_total = 0
@@ -716,7 +734,16 @@ def propuesta_pdf(request, pk_propuesta):
             costo_total += ofrecimiento.codigode.costo
             data.append(["1", ofrecimiento.materia, str(ofrecimiento.codigode.modalidad) + " / " + str(ofrecimiento.codigode.codigo), ofrecimiento.estrategia, ofrecimiento.titulo, str(ofrecimiento.horas), str(format_thousands(ofrecimiento.codigode.costo)), str(format_thousands(ofrecimiento.codigode.costo))])
 
-    data.append(['', '', '', '', '', '', 'Total', str(format_thousands(costo_total)),])
+
+
+    if propuesta.tipo == 'Colegio - Maestros':
+        data.append(['Total de Maestros:', '', str(ofrecimientos[0].participantes), '', '', '', 'Total', str(format_thousands(costo_total)),])
+        data.append([''' <u>Necesidad</u>: ''' + str(propuesta.necesidad), '', '', '', '<u>Descripción</u>: ' + str(propuesta.descripcion), '', '', ''])
+    elif propuesta.tipo == 'Colegio - Padres':
+        data.append(['', '', '', '', '', '', 'Total', str(format_thousands(costo_total)),])
+        data.append([''' <u>Necesidad</u>: ''' + str(propuesta.necesidad), '', '', '', '<u>Descripción</u>: ' + str(propuesta.descripcion), '', '', ''])
+    else:
+        data.append(['', '', '', '', '', '', 'Total', str(format_thousands(costo_total)),])
 
     s = getSampleStyleSheet()
     s = s["BodyText"]
@@ -724,16 +751,41 @@ def propuesta_pdf(request, pk_propuesta):
     data2 = [[Paragraph(cell, s) for cell in row] for row in data]
     t=Table(data2, colWidths=[inch*0.8, inch*0.8, inch*0.9, inch*1, inch*3, inch*0.6, inch*1, inch*1],  rowHeights=inch*0.7)
 
-    t.setStyle(TableStyle([('ALIGN',(0,0),(-1,1),'CENTER'),
-                        ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-                        ('SPAN',(0,-1),(-3,-1)),
-                        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-                        ('BOX', (0,0), (-1,-1), 0.25, colors.black),
-                        ]))
-    tableheight = len(data) * inch * 0.7 + 140
+    if propuesta.tipo == 'Colegio - Maestros':
+        t.setStyle(TableStyle([('ALIGN',(0,0),(-1,1),'CENTER'),
+                            ('VALIGN',(0,0),(-1,-2),'MIDDLE'),
+                            ('SPAN',(0,-2),(1,-2)),
+                            ('SPAN',(3,-2),(5,-2)),
+                            ('SPAN',(0,-1),(3,-1)),
+                            ('SPAN',(-4,-1),(-1,-1)),
+                            ('VALIGN',(0,-1),(-1,-1),'TOP'),
+                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                            ]))
+    elif propuesta.tipo == 'Colegio - Padres':
+        t.setStyle(TableStyle([('ALIGN',(0,0),(-1,1),'CENTER'),
+                            ('VALIGN',(0,0),(-1,-2),'MIDDLE'),
+                            ('SPAN',(0,-2),(5,-2)),
+                            ('SPAN',(0,-1),(3,-1)),
+                            ('SPAN',(-4,-1),(-1,-1)),
+                            ('VALIGN',(0,-1),(-1,-1),'TOP'),
+                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                            ]))
+    else:
+        t.setStyle(TableStyle([('ALIGN',(0,0),(-1,1),'CENTER'),
+                            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+                            ('SPAN',(0,-1),(-3,-1)),
+                            ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                            ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                            ]))
+    tableheight = len(data) * inch * 0.7 + 76
 
     t.wrap(648, 358)
     t.drawOn(p, 0, -tableheight)
+
+    #
+
 
     #Firma
     p.drawString(0, -435, 'Firma: ')
@@ -865,3 +917,36 @@ def lista_po(request):
         pos = PurchaseOrder.objects.filter(propuesta__vendedor__usuario=request.user)
 
     return render(request, 'CATEDRA/lista_po.html', {'pos': pos})
+
+@login_required
+def cargar_servicios(request):
+    wb = openpyxl.load_workbook('CATEDRA/catalogocatedra.xlsx')
+    sheet = wb.get_sheet_by_name('Sheet1')
+
+    for i in range(1, 146):
+        obj, created = Servicio.objects.get_or_create(
+                    tipo = sheet.cell(row=i, column=1).value,
+                    estrategia = sheet.cell(row=i, column=2).value,
+                    titulo = sheet.cell(row=i, column=3).value
+                    )
+
+        print(obj, created)
+
+    return render(request, 'CATEDRA/cargar_servicios.html', {})
+
+@login_required
+def catalogo_servicios(request):
+    servicios = Servicio.objects.all()
+
+    return render(request, 'CATEDRA/catalogo_servicios.html', {'servicios': servicios,})
+
+def ofrecimiento_titulos_json(request, estrategia):
+    print(estrategia)
+    titulos = Servicio.objects.filter(estrategia=estrategia).order_by('titulo').values('titulo').distinct()
+    lista_titulos = [{'titulo': titulos[i]['titulo']} for i in range(0, len(titulos))]
+
+
+    print(lista_titulos)
+    json_titulos = json.dumps(lista_titulos)
+    print(json_titulos)
+    return HttpResponse(json_titulos, content_type="application/javascript")
