@@ -932,6 +932,17 @@ def cargar_servicios(request):
 
         print(obj, created)
 
+    sheet2 = wb.get_sheet_by_name('Sheet2')
+
+    for i in range(1, 82):
+        obj, created = Servicio.objects.get_or_create(
+                    tipo = sheet2.cell(row=i, column=1).value,
+                    estrategia = sheet2.cell(row=i, column=2).value,
+                    titulo = sheet2.cell(row=i, column=3).value
+                    )
+
+        print(obj, created)
+
     return render(request, 'CATEDRA/cargar_servicios.html', {})
 
 @login_required
