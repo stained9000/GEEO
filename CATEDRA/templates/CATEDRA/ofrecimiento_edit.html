@@ -9,7 +9,9 @@
           <h3>Información de ofrecimiento</h3>
         </div> <!-- End card-title -->
         <div class="card-block">
+          {% if request_type == 'edit' %}
           <form enctype="multipart/form-data" method="POST" class="post-form">{% csrf_token %}
+            <!--
             <div class="fieldWrapper">
               <label for="id_estado">Estado:</label>
               <select name="estado" id="id_estado">
@@ -18,6 +20,7 @@
                 <option value="RECHAZADA">RECHAZADA</option>
               </select>
             </div>
+          -->
             <div class="fieldWrapper">
               <label for="id_codigode">Codigo Departamento Educacion:</label>
               <select name="codigode" required id="id_codigode">
@@ -62,9 +65,9 @@
             <br/>
             <button type="submit"><span class="fa fa-save"></span> Guardar</button>
           </form>
-          <script>
-
-          </script>
+          {% else %}
+            {{form}}
+          {% endif %}
         </div> <!-- End card-block -->
       </div> <!-- End card -->
     </div> <!-- End column -->

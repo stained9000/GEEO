@@ -26,6 +26,8 @@ from reportlab.lib import colors
 import openpyxl
 from django.core import serializers
 import json
+
+
 # Create your views here.
 
 
@@ -598,7 +600,7 @@ def propuesta_detalle(request, pk_propuesta):
 @login_required
 def crear_ofrecimiento(request, pk_propuesta):
     propuesta = Propuesta.objects.get(pk=pk_propuesta)
-    codigosde = CodigosDE.objects.filter(tipo=propuesta.tipo)
+    codigosde = CodigosDE.objects.filter(tipo=propuesta.tipo).order_by('codigo')
     estrategias = Servicio.objects.all().order_by('estrategia').values('estrategia').distinct()
     titulos = Servicio.objects.all().order_by('titulo').values('titulo').distinct()
 
@@ -616,6 +618,12 @@ def crear_ofrecimiento(request, pk_propuesta):
 
 @login_required
 def ofrecimiento_edit(request, pk_ofrecimiento, pk_propuesta):
+    request_type = request.path[-5:-1]
+    propuesta = Propuesta.objects.get(pk=pk_propuesta)
+    codigosde = CodigosDE.objects.filter(tipo=propuesta.tipo).order_by('codigo')
+    estrategias = Servicio.objects.all().order_by('estrategia').values('estrategia').distinct()
+    titulos = Servicio.objects.all().order_by('titulo').values('titulo').distinct()
+
 
     ofrecimiento = get_object_or_404(Ofrecimiento, pk=pk_ofrecimiento)
 
@@ -629,7 +637,7 @@ def ofrecimiento_edit(request, pk_ofrecimiento, pk_propuesta):
         form = OfrecimientoForm(instance=ofrecimiento)
 
 
-    return render(request, 'CATEDRA/ofrecimiento_edit.html', {'form': form})
+    return render(request, 'CATEDRA/ofrecimiento_edit.html', {'form': form, 'codigosde': codigosde, 'estrategias': estrategias, 'titulos': titulos, 'request_type': request_type,})
 
 @login_required
 def borrar_ofrecimiento(request, pk_propuesta, pk_ofrecimiento):
@@ -725,15 +733,18 @@ def propuesta_pdf(request, pk_propuesta):
     costo_total = 0
     data= [['Cantidad', 'Materia', 'Modalidad/Codigo', 'Estrategia', 'Titulo', 'Horas', 'Costo', 'Total'],
            ]
-
+    long_title = False
     for ofrecimiento in ofrecimientos:
         if ofrecimiento.codigode.codigo == 11829:
             costo_total += ofrecimiento.codigode.costo * ofrecimiento.participantes
             data.append([str(ofrecimiento.participantes), ofrecimiento.materia, str(ofrecimiento.codigode.modalidad) + " / " + str(ofrecimiento.codigode.codigo), ofrecimiento.estrategia, ofrecimiento.titulo, str(ofrecimiento.horas), str(format_thousands(ofrecimiento.codigode.costo)), str(format_thousands(ofrecimiento.codigode.costo*ofrecimiento.participantes))])
+            if len(ofrecimiento.titulo) >= 156:
+                long_title = True
         else:
             costo_total += ofrecimiento.codigode.costo
             data.append(["1", ofrecimiento.materia, str(ofrecimiento.codigode.modalidad) + " / " + str(ofrecimiento.codigode.codigo), ofrecimiento.estrategia, ofrecimiento.titulo, str(ofrecimiento.horas), str(format_thousands(ofrecimiento.codigode.costo)), str(format_thousands(ofrecimiento.codigode.costo))])
-
+            if len(ofrecimiento.titulo) >= 156:
+                long_title = True
 
 
     if propuesta.tipo == 'Colegio - Maestros':
@@ -749,7 +760,10 @@ def propuesta_pdf(request, pk_propuesta):
     s = s["BodyText"]
     s.wordWrap = 'CJK'
     data2 = [[Paragraph(cell, s) for cell in row] for row in data]
-    t=Table(data2, colWidths=[inch*0.8, inch*0.8, inch*0.9, inch*1, inch*3, inch*0.6, inch*1, inch*1],  rowHeights=inch*0.7)
+    if long_title == True:
+        t=Table(data2, colWidths=[inch*0.8, inch*0.8, inch*0.9, inch*1, inch*3, inch*0.6, inch*1, inch*1],  rowHeights=inch*0.8)
+    else:
+        t=Table(data2, colWidths=[inch*0.8, inch*0.8, inch*0.9, inch*1, inch*3, inch*0.6, inch*1, inch*1],  rowHeights=inch*0.7)
 
     if propuesta.tipo == 'Colegio - Maestros':
         t.setStyle(TableStyle([('ALIGN',(0,0),(-1,1),'CENTER'),
@@ -779,7 +793,10 @@ def propuesta_pdf(request, pk_propuesta):
                             ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
                             ('BOX', (0,0), (-1,-1), 0.25, colors.black),
                             ]))
-    tableheight = len(data) * inch * 0.7 + 76
+    if long_title == True:
+        tableheight = len(data) * inch * 0.8 + 76
+    else:
+        tableheight = len(data) * inch * 0.7 + 76
 
     t.wrap(648, 358)
     t.drawOn(p, 0, -tableheight)

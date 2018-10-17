@@ -56,7 +56,7 @@ class OfrecimientoForm(forms.ModelForm):
 
     class Meta:
         model = Ofrecimiento
-        fields = ('estado', 'codigode', 'materia', 'estrategia', 'titulo', 'horas', 'participantes', )
+        fields = ('codigode', 'materia', 'estrategia', 'titulo', 'horas', 'participantes', )
 
 class PurchaseOrderForm(forms.ModelForm):
 
