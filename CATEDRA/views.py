@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Empleado, Municipio, Propuesta, Ofrecimiento, CodigosDE, PurchaseOrder, Servicio
-from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezaForm, ActividadForm, VisitaForm, PresupuestoForm, PropuestaForm, OfrecimientoForm, PurchaseOrderForm
+from .forms import EscuelaForm, PersonalForm, MatriculaForm, DestrezaForm, ActividadForm, VisitaForm, PresupuestoForm, PropuestaForm, OfrecimientoForm, PurchaseOrderForm, FacturaForm
 from django.utils import timezone
 from sodapy import Socrata
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -27,7 +27,11 @@ import openpyxl
 from django.core import serializers
 import json
 
-
+from django.views.decorators.csrf import csrf_exempt
+import xml.etree.ElementTree as ET
+from django.contrib.auth import authenticate as auth
+from django.contrib.auth import login
+import osa
 # Create your views here.
 
 
@@ -978,3 +982,58 @@ def ofrecimiento_titulos_json(request, estrategia):
     json_titulos = json.dumps(lista_titulos)
     print(json_titulos)
     return HttpResponse(json_titulos, content_type="application/javascript")
+
+def po_detalle(request, numero_po):
+    po = PurchaseOrder.objects.get(numero=numero_po)
+    ofrecimientos = po.ofrecimiento.all()
+    facturas = po.factura_set.all()
+
+    costo_total = 0
+
+    for ofrecimiento in ofrecimientos:
+        if ofrecimiento.codigode.codigo == 11829:
+            costo_total += ofrecimiento.codigode.costo * ofrecimiento.participantes
+        else:
+            costo_total += ofrecimiento.codigode.costo
+
+    return render(request, 'CATEDRA/PO_detalle.html', {'po': po, 'ofrecimientos': ofrecimientos, 'costo_total': costo_total, 'facturas': facturas,})
+
+@login_required
+def crear_factura(request, numero_po):
+    po = PurchaseOrder.objects.get(numero=numero_po)
+
+    if request.method == "POST":
+        form = FacturaForm(request.POST)
+        if form.is_valid():
+            factura = form.save(commit=False)
+            factura.po = po
+            factura.save()
+            return redirect('po_detalle', numero_po=po.numero)
+    else:
+        form = FacturaForm()
+
+    return render(request, 'CATEDRA/factura_edit.html', {'form': form,})
+
+@login_required
+def factura_edit(request, numero_factura, numero_po):
+    po = PurchaseOrder.objects.get(numero=numero_po)
+    factura = get_object_or_404(Factura, numero=numero_factura)
+
+    if request.method == "POST":
+        form = FacturaForm(request.POST, instance=factura)
+        if form.is_valid():
+            factura = form.save(commit=False)
+            factura.save()
+            return redirect('po_detalle', numero_po=po.numero)
+    else:
+        form = FacturaForm(instance=factura)
+
+
+    return render(request, 'CATEDRA/factura_edit.html', {'form': form,})
+
+@login_required
+def borrar_factura(request, numero_factura, numero_po):
+    factura = Factura.objects.get(numero=numero_factura)
+    factura.delete()
+
+    return redirect('po_detalle', numero_po=numero_po)

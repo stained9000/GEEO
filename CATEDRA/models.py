@@ -504,3 +504,12 @@ class PurchaseOrder(models.Model):
     ofrecimiento = models.ManyToManyField(Ofrecimiento)
     numero = models.CharField(max_length=200)
     documento = models.FileField(upload_to='registros/po/')
+
+class Factura(models.Model):
+    numero = models.IntegerField(primary_key=True)
+    fecha = models.DateField(default=timezone.now)
+    monto = models.IntegerField(default=0)
+    po = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "Factura No." + str(self.numero) + " - " + self.po.propuesta.escuela.nombre

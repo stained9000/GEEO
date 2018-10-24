@@ -25,7 +25,7 @@ SECRET_KEY = 'v)-^4mpi^g_k^ppd7f741*g55nou4cj4pe!(pewf#8@ht+98hu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com', '.geeopr.com']
+ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com', '.geeopr.com', 'localhost']
 
 
 # Application definition
@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'GEEO.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
+"""
 try:
     import dj_database_url
     DATABASES = {
@@ -108,7 +108,7 @@ DATABASES = {
 }
 
 DEBUG = True
-"""
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -174,3 +174,6 @@ STATICFILES_STORAGE = 'GEEO.storage_backends.StaticStorage'
 
 MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'GEEO.storage_backends.MediaStorage'
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False

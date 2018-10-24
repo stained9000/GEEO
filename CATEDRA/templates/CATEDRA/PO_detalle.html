@@ -1,0 +1,114 @@
+{% extends 'CATEDRA/base.html' %}
+
+{% block content %}
+<div class="contenido" style="display: none">
+  <div class="row grid-responsive">
+    <div class="column page-heading">
+      <div class="large-card clearfix">
+        <div class="float-left">
+          <h2>PO No. {{po.pk}} - Escuela {{po.propuesta.escuela.nombre}}</h2>
+
+          <em>Creado en {{po.fecha}}</em>
+          <br>
+          <br>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="row grid-responsive">
+    <div class="column">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h2 class="float-left">Ofrecimientos</h2>
+        </div> <!-- End card-title -->
+        <div class="card-block">
+          <table>
+            <thead>
+              <th>Estado</th>
+              <th>Cantidad</th>
+              <th class="ofrecimiento-materia">Materia</th>
+              <th>Modalidad/Codigo</th>
+              <th class="ofrecimiento-estrategia">Estrategia</th>
+              <th class="ofrecimiento-titulo">Titulo</th>
+              <th class="ofrecimiento-horas">Horas</th>
+              <th>Costo</th>
+              <th>Total</th>
+
+            </thead>
+            <tbody>
+              {% for ofrecimiento in ofrecimientos %}
+              <tr>
+                <td>{{ofrecimiento.estado}}</td>
+                {% if ofrecimiento.codigode.codigo == 11829 %}
+                <td>{{ofrecimiento.participantes}}</td>
+                {% else %}
+                <td>1</td>
+                {% endif %}
+                <td class="ofrecimiento-materia">{{ofrecimiento.materia}}</td>
+                <td>{{ofrecimiento.codigode}}</td>
+                <td class="ofrecimiento-estrategia">{{ofrecimiento.estrategia}}</td>
+                <td class="ofrecimiento-titulo">{{ofrecimiento.titulo}}</td>
+                <td class="ofrecimiento-horas">{{ofrecimiento.horas}}</td>
+                <td>${{ofrecimiento.codigode.costo|format_thousands}}</td>
+                {% if ofrecimiento.codigode.codigo == 11829 %}
+                <td>${{ofrecimiento.codigode.costo|multiply:ofrecimiento.participantes|format_thousands}}</td>
+                {% else %}
+                <td>${{ofrecimiento.codigode.costo|format_thousands}}</td>
+                {% endif %}
+              {% endfor %}
+              <tr>
+
+                <td></td>
+                <td></td>
+                <td class="ofrecimiento-materia"></td>
+                <td></td>
+                <td class="ofrecimiento-estrategia"></td>
+                <td class="ofrecimiento-titulo"></td>
+                <td class="ofrecimiento-horas"></td>
+                <td><strong>Total</strong></td>
+                <td><strong>${{costo_total|format_thousands}}</strong></td>
+
+              </tr>
+            </tbody>
+          </table>
+        </div> <!-- End card-block -->
+      </div> <!-- End card -->
+    </div> <!--End column -->
+  </div> <!-- End row -->
+
+  <div class="row grid-responsive">
+    <div class="column">
+      <div class="card">
+        <div class="card-title clearfix">
+          <h2 class="float-left">Facturas</h2>
+          <a class="button float-right" href="{% url 'crear_factura' numero_po=po.numero %}"><span class="fa fa-plus"></span> Agregar</a>
+        </div> <!-- End card-title -->
+        <div class="card-block">
+          <table>
+            <thead>
+              <th>Numero QB</th>
+              <th>Fecha</th>
+              <th>Monto</th>
+            </thead>
+            <tbody>
+              {% for factura in facturas %}
+              <tr>
+                <td>{{factura.numero}}</td>
+                <td>{{factura.fecha}}</td>
+                <td>{{factura.monto}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div> <!-- End card-block -->
+      </div> <!-- End card -->
+    </div> <!--End column -->
+  </div> <!-- End row -->
+
+</div>
+
+
+{% endblock %}

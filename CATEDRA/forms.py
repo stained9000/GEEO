@@ -2,7 +2,7 @@ from dal import autocomplete
 from django import forms
 from django.forms import SelectMultiple
 
-from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Propuesta, Ofrecimiento, PurchaseOrder
+from .models import Escuela, Personal, Matricula, Actividad, Destreza, Presupuesto, Visita, Propuesta, Ofrecimiento, PurchaseOrder, Factura
 
 class EscuelaForm(forms.ModelForm):
 
@@ -63,3 +63,9 @@ class PurchaseOrderForm(forms.ModelForm):
     class Meta:
         model = PurchaseOrder
         fields = ('numero', 'ofrecimiento', 'documento',)
+
+class FacturaForm(forms.ModelForm):
+
+    class Meta:
+        model = Factura
+        fields = ('numero', 'fecha', 'monto',)

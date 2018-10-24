@@ -33,10 +33,15 @@ urlpatterns = [
     path('propuesta/<int:pk_propuesta>/ofrecimiento/<int:pk_ofrecimiento>/edit', views.ofrecimiento_edit, name='ofrecimiento_edit'),
     path('propuesta/<int:pk_propuesta>/pdf/', views.propuesta_pdf, name='propuesta_pdf'),
     path('ofrecimientos', views.lista_ofrecimientos, name='lista_ofrecimientos'),
+    path('po/<int:numero_po>/', views.po_detalle, name='po_detalle'),
+    path('po/<int:numero_po>/factura/crear', views.crear_factura, name='crear_factura'),
+    path('po/<int:numero_po>/factura/<int:numero_factura>/editar', views.factura_edit, name='factura_edit'),
+    path('po/<int:numero_po>/factura/<int:numero_factura>/borrar', views.borrar_factura, name='borrar_factura'),
     path('propuesta/<int:pk_propuesta>/po/crear/', views.crear_po, name='crear_po'),
     path('propuesta/<int:pk_propuesta>/po/<int:pk_po>/borrar', views.borrar_po, name='borrar_po'),
     path('propuesta/<int:pk_propuesta>/po/<int:pk_po>/edit', views.po_edit, name='po_edit'),
     path('lista_po', views.lista_po, name='lista_po'),
     path('catalogo_servicios', views.catalogo_servicios, name='catalogo_servicios'),
     path('estrategia/<str:estrategia>/ofrecimiento_titulos_json', views.ofrecimiento_titulos_json, name='ofrecimiento_titulos_json'),
+
 ]

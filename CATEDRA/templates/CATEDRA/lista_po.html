@@ -32,7 +32,7 @@
                   <tr>
                     <td>{{po.fecha.month|format_month}} {{po.fecha.year}}</td>
                     <td><a href="{% url 'perfil_escuela' codigo=po.propuesta.escuela.codigo %}">{{po.propuesta.escuela.nombre}}</a></td>
-                    <td>{{po.numero}}</td>
+                    <td><a href="{% url 'po_detalle' numero_po=po.numero %}">{{po.numero}}</a></td>
                     <td>{{po.ofrecimiento.all.count}}</td>
                     <td><a href="{% url 'propuesta_detalle' pk_propuesta=po.propuesta.pk %}">{{po.propuesta.pk}}</a></td>
                     <td>$ {{po.ofrecimiento.all|po_total|format_thousands}}</td>
