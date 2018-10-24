@@ -8,7 +8,7 @@ class EscuelaForm(forms.ModelForm):
 
     class Meta:
         model = Escuela
-        fields = ('codigo', 'nombre', 'telefono', 'fax', 'region_educativa', 'distrito_escolar', 'nivel',  'tipo')
+        fields = ('codigo', 'nombre', 'telefono', 'fax', 'region_educativa', 'municipio_escolar', 'nivel',  'tipo')
 
 class PersonalForm(forms.ModelForm):
 

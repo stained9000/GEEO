@@ -552,6 +552,7 @@ def crear_propuesta(request, pk_vendedor):
 
     if request.method == "POST":
         form = PropuestaForm(request.POST, request.FILES)
+
         form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
         if form.is_valid():
             propuesta = form.save(commit=False)
@@ -603,6 +604,7 @@ def propuesta_detalle(request, pk_propuesta):
 
 @login_required
 def crear_ofrecimiento(request, pk_propuesta):
+    request_type = request.path[-4:]
     propuesta = Propuesta.objects.get(pk=pk_propuesta)
     codigosde = CodigosDE.objects.filter(tipo=propuesta.tipo).order_by('codigo')
     estrategias = Servicio.objects.all().order_by('estrategia').values('estrategia').distinct()
@@ -618,16 +620,16 @@ def crear_ofrecimiento(request, pk_propuesta):
     else:
         form = OfrecimientoForm()
 
-    return render(request, 'CATEDRA/ofrecimiento_edit.html', {'form': form, 'codigosde': codigosde, 'estrategias': estrategias, 'titulos': titulos,})
+    return render(request, 'CATEDRA/ofrecimiento_edit.html', {'form': form, 'codigosde': codigosde, 'estrategias': estrategias, 'titulos': titulos, 'request_type': request_type,})
 
 @login_required
 def ofrecimiento_edit(request, pk_ofrecimiento, pk_propuesta):
-    request_type = request.path[-5:-1]
+    request_type = request.path[-4:]
     propuesta = Propuesta.objects.get(pk=pk_propuesta)
     codigosde = CodigosDE.objects.filter(tipo=propuesta.tipo).order_by('codigo')
     estrategias = Servicio.objects.all().order_by('estrategia').values('estrategia').distinct()
     titulos = Servicio.objects.all().order_by('titulo').values('titulo').distinct()
-
+    print(request.path)
 
     ofrecimiento = get_object_or_404(Ofrecimiento, pk=pk_ofrecimiento)
 
