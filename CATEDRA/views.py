@@ -607,7 +607,7 @@ def crear_ofrecimiento(request, pk_propuesta):
     request_type = request.path[-4:]
     propuesta = Propuesta.objects.get(pk=pk_propuesta)
 
-    if propuesta.tipo = 'Publica - Padres':
+    if propuesta.tipo == 'Publica - Padres':
         codigosde = CodigosDE.objects.filter(tipo='Colegio - Padres').order_by('codigo')
     else:
         codigosde = CodigosDE.objects.filter(tipo=propuesta.tipo).order_by('codigo')
@@ -632,11 +632,11 @@ def ofrecimiento_edit(request, pk_ofrecimiento, pk_propuesta):
     request_type = request.path[-4:]
     propuesta = Propuesta.objects.get(pk=pk_propuesta)
 
-    if propuesta.tipo = 'Publica - Padres':
+    if propuesta.tipo == 'Publica - Padres':
         codigosde = CodigosDE.objects.filter(tipo='Colegio - Padres').order_by('codigo')
     else:
         codigosde = CodigosDE.objects.filter(tipo=propuesta.tipo).order_by('codigo')
-        
+
     estrategias = Servicio.objects.all().order_by('estrategia').values('estrategia').distinct()
     titulos = Servicio.objects.all().order_by('titulo').values('titulo').distinct()
     print(request.path)
