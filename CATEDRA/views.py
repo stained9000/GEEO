@@ -28,10 +28,10 @@ from django.core import serializers
 import json
 
 from django.views.decorators.csrf import csrf_exempt
-import xml.etree.ElementTree as ET
+
 from django.contrib.auth import authenticate as auth
 from django.contrib.auth import login
-import osa
+
 # Create your views here.
 
 
