@@ -58,9 +58,9 @@ def inicio(request):
         if empleado.rol == 'Vendedor':
             return redirect('perfil_vendedor', pk=empleado.pk)
         else:
-            return render(request, 'CATEDRA/inicio.html')
+            return redirect('lista_escuelas')
     except:
-        return render(request, 'CATEDRA/inicio.html')
+        return redirect('lista_escuelas')
 
 def perfil_escuela(request, codigo):
 
@@ -443,7 +443,7 @@ def perfil_vendedor(request, pk):
     for propuesta in propuestas:
         ofrecimientos = propuesta.ofrecimiento_set.filter(estado='APROBADA')
         for ofrecimiento in ofrecimientos:
-            if ofrecimiento.codigode.codigo == 11829:
+            if ofrecimiento.codigode.codigo == 11829 or ofrecimiento.codigode.codigo == 11811:
                 ventas_totales += ofrecimiento.codigode.costo * ofrecimiento.participantes
             else:
                 ventas_totales += ofrecimiento.codigode.costo
@@ -452,30 +452,6 @@ def perfil_vendedor(request, pk):
 
     if ventas_totales_percent > 1:
         ventas_totales_percent = 1
-
-    #paginator escuelas
-    page = request.GET.get('page1', 1)
-
-    paginator = Paginator(lista_escuelas, 6)
-
-    try:
-        escuelas = paginator.page(page)
-    except PageNotAnInteger:
-        escuelas = paginator.page(1)
-    except EmptyPage:
-        escuelas = paginator.page(paginator.num_pages)
-
-    #paginator escuelas visitadas
-    page = request.GET.get('page2', 1)
-
-    paginator = Paginator(lista_escuelas_visitadas, 6)
-
-    try:
-        lista_escuelas_visitadas = paginator.page(page)
-    except PageNotAnInteger:
-        lista_escuelas_visitadas = paginator.page(1)
-    except EmptyPage:
-        lista_escuelas_visitadas = paginator.page(paginator.num_pages)
 
     return render(request, 'CATEDRA/perfil_vendedor.html', {'vendedor': vendedor, 'visitas': visitas, 'municipios': municipios, 'total_escuelas': total_escuelas, 'propuestas': propuestas, 'ventas_totales': ventas_totales, 'ventas_totales_percent': ventas_totales_percent , 'lista_escuelas_visitadas': lista_escuelas_visitadas, 'lista_escuelas_sin_visita': lista_escuelas_sin_visita, 'total_escuelas_visitadas': total_escuelas_visitadas, 'total_escuelas_sin_visita': total_escuelas_sin_visita,})
 
@@ -540,7 +516,7 @@ def historial_propuestas(request, pk):
     if vendedor.rol == 'Vendedor':
         propuestas = Propuesta.objects.filter(vendedor=vendedor).order_by("-fecha")
     else:
-        propuestas = Propuesta.objects.all()
+        propuestas = Propuesta.objects.all().order_by("-fecha")
 
     return render(request, 'CATEDRA/historial_propuestas.html', {'vendedor': vendedor, 'propuestas': propuestas,})
 
@@ -552,8 +528,8 @@ def crear_propuesta(request, pk_vendedor):
 
     if request.method == "POST":
         form = PropuestaForm(request.POST, request.FILES)
-
-        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
+        if empleado.usuario.is_staff != True:
+            form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
         if form.is_valid():
             propuesta = form.save(commit=False)
             propuesta.vendedor = empleado
@@ -561,7 +537,8 @@ def crear_propuesta(request, pk_vendedor):
             return redirect('propuesta_detalle', pk_propuesta=propuesta.pk)
     else:
         form = PropuestaForm()
-        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
+        if empleado.usuario.is_staff != True:
+            form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
 
     return render(request, 'CATEDRA/propuesta_edit.html', {'form': form})
 
@@ -574,14 +551,18 @@ def propuesta_edit(request, pk_vendedor, pk_propuesta):
 
     if request.method == "POST":
         form = PropuestaForm(request.POST, instance=propuesta)
-        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
+        if empleado.usuario.is_staff != True:
+            form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
+
         if form.is_valid():
             propuesta = form.save(commit=False)
             propuesta.save()
             return redirect('propuesta_detalle', pk_propuesta=pk_propuesta)
     else:
         form = PropuestaForm(instance=propuesta)
-        form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
+        if empleado.usuario.is_staff != True:
+            form.fields['escuela'].queryset = Escuela.objects.filter(municipio_escolar__in=lista_municipios).order_by('nombre')
+
 
     return render(request, 'CATEDRA/propuesta_edit.html', {'form': form})
 
@@ -595,7 +576,7 @@ def propuesta_detalle(request, pk_propuesta):
     costo_total = 0
 
     for ofrecimiento in ofrecimientos:
-        if ofrecimiento.codigode.codigo == 11829:
+        if ofrecimiento.codigode.codigo == 11829 or ofrecimiento.codigode.codigo == 11811:
             costo_total += ofrecimiento.codigode.costo * ofrecimiento.participantes
         else:
             costo_total += ofrecimiento.codigode.costo
@@ -751,7 +732,7 @@ def propuesta_pdf(request, pk_propuesta):
            ]
     long_title = False
     for ofrecimiento in ofrecimientos:
-        if ofrecimiento.codigode.codigo == 11829:
+        if ofrecimiento.codigode.codigo == 11829 or ofrecimiento.codigode.codigo == 11811:
             costo_total += ofrecimiento.codigode.costo * ofrecimiento.participantes
             data.append([str(ofrecimiento.participantes), ofrecimiento.materia, str(ofrecimiento.codigode.modalidad) + " / " + str(ofrecimiento.codigode.codigo), ofrecimiento.estrategia, ofrecimiento.titulo, str(ofrecimiento.horas), str(format_thousands(ofrecimiento.codigode.costo)), str(format_thousands(ofrecimiento.codigode.costo*ofrecimiento.participantes))])
             if len(ofrecimiento.titulo) >= 156:
@@ -1003,7 +984,7 @@ def po_detalle(request, numero_po):
     costo_total = 0
 
     for ofrecimiento in ofrecimientos:
-        if ofrecimiento.codigode.codigo == 11829:
+        if ofrecimiento.codigode.codigo == 11829 or ofrecimiento.codigode.codigo == 11811:
             costo_total += ofrecimiento.codigode.costo * ofrecimiento.participantes
         else:
             costo_total += ofrecimiento.codigode.costo

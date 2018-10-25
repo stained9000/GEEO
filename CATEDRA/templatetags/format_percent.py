@@ -6,4 +6,4 @@ def format_percent(value):
     if isinstance(value, float):
         return "{0:.2f}".format(value * 100)
     else:
-        return value
+        return value * 100
