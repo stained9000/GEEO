@@ -6,7 +6,7 @@ def po_total(ofrecimiento_list):
     total = 0
 
     for ofrecimiento in ofrecimiento_list:
-        if ofrecimiento.codigode.codigo == 11829:
+        if ofrecimiento.codigode.codigo == 11829 or ofrecimiento.codigode.codigo == 11811:
             total += ofrecimiento.codigode.costo * ofrecimiento.participantes
         else:
             total += ofrecimiento.codigode.costo
