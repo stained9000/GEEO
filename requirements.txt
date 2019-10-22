@@ -21,7 +21,7 @@ idna==2.6
 jdcal==1.4
 jmespath==0.9.3
 openpyxl==2.1.4
-Pillow==5.2.0
+Pillow==6.2.0
 postgres==2.2.2
 protobuf==3.6.1
 psycopg2==2.7.5
